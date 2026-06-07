@@ -5,6 +5,10 @@ import Stats from "./sections/Stats";
 import Categories from "./sections/Categories";
 import Freelancers from "./sections/Freelancers";
 import Companies from "./sections/Companies";
+import HowItWorks from "./sections/HowItWorks";
+import Testimonials from "./sections/Testimonials";
+import CTA from "./sections/CTA";
+import Footer from "./sections/footer";
 
 export default function HomePage() {
   return (
@@ -16,6 +20,10 @@ export default function HomePage() {
       <Categories />
       <Freelancers />
       <Companies />
+      <HowItWorks />
+      <Testimonials />
+      <CTA />
+    <Footer />
     </>
   );
 }
