@@ -9,7 +9,7 @@ import {
   WrenchScrewdriverIcon,
 } from "@heroicons/react/24/outline";
 
-import { categories } from "../data/categories";
+import { categories } from "../data/Categories";
 
 const icons = [
   CodeBracketIcon,

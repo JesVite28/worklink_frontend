@@ -8,7 +8,7 @@ import Companies from "./sections/Companies";
 import HowItWorks from "./sections/HowItWorks";
 import Testimonials from "./sections/Testimonials";
 import CTA from "./sections/CTA";
-import Footer from "./sections/footer";
+import Footer from "./sections/Footer";
 
 export default function HomePage() {
   return (
