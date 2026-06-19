@@ -1,4 +1,4 @@
-import Navbar from "../../components/layout/Navbar";
+import Navbar from "../../shared/components/layout/Navbar";
 import Hero from "./sections/Hero";
 import Search from "./sections/Search";
 import Stats from "./sections/Stats";
@@ -23,7 +23,7 @@ export default function HomePage() {
       <HowItWorks />
       <Testimonials />
       <CTA />
-    <Footer />
+      <Footer />
     </>
   );
 }
