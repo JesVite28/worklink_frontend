@@ -3,19 +3,19 @@ import { freelancers } from "../data/Freelancers";
 
 export default function Freelancers() {
   return (
-    <section className="py-20 bg-slate-50">
+    <section className="py-20 bg-background">
       <div className="max-w-7xl mx-auto px-6">
 
         <div className="text-center mb-12">
-          <span className="text-violet-600 font-semibold">
+          <span className="text-primary font-semibold">
             Talento destacado
           </span>
 
-          <h2 className="text-4xl font-bold mt-2">
+          <h2 className="text-4xl font-bold mt-2 text-text">
             Freelancers recomendados
           </h2>
 
-          <p className="text-slate-500 mt-3">
+          <p className="text-text-muted mt-3">
             Profesionales verificados con excelentes valoraciones.
           </p>
         </div>
@@ -26,12 +26,12 @@ export default function Freelancers() {
             <div
               key={freelancer.id}
               className="
-                bg-white
+                bg-surface
                 rounded-2xl
                 overflow-hidden
                 border
-                border-slate-200
-                hover:shadow-xl
+                border-border
+                hover:shadow-card
                 transition-all
               "
             >
@@ -43,31 +43,31 @@ export default function Freelancers() {
 
               <div className="p-5">
 
-                <h3 className="font-semibold text-lg">
+                <h3 className="font-semibold text-lg text-text">
                   {freelancer.name}
                 </h3>
 
-                <p className="text-slate-500 text-sm mt-1">
+                <p className="text-text-muted text-sm mt-1">
                   {freelancer.profession}
                 </p>
 
                 <div className="flex items-center gap-2 mt-4">
-                  <StarIcon className="h-5 w-5 text-yellow-400" />
-                  <span className="font-medium">
+                  <StarIcon className="h-5 w-5 text-warning" />
+                  <span className="font-medium text-text">
                     {freelancer.rating}
                   </span>
                 </div>
 
                 <div className="mt-4 flex items-center justify-between">
 
-                  <span className="font-bold text-violet-600">
+                  <span className="font-bold text-primary">
                     {freelancer.price}
                   </span>
 
                   <button
                     className="
-                      bg-violet-600
-                      hover:bg-violet-700
+                      bg-primary
+                      hover:opacity-90
                       text-white
                       px-4
                       py-2

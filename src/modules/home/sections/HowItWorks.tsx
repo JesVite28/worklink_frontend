@@ -27,19 +27,19 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section className="py-24 bg-white">
+    <section className="py-24 bg-background">
       <div className="max-w-7xl mx-auto px-6">
 
         <div className="text-center mb-16">
-          <span className="text-violet-600 font-semibold">
+          <span className="text-primary font-semibold">
             ¿Cómo funciona?
           </span>
 
-          <h2 className="text-4xl font-bold mt-2">
+          <h2 className="text-4xl font-bold mt-2 text-text">
             Empieza en pocos pasos
           </h2>
 
-          <p className="text-slate-500 mt-4">
+          <p className="text-text-muted mt-4">
             WorkLink conecta empresas y profesionales de forma rápida.
           </p>
         </div>
@@ -53,12 +53,14 @@ export default function HowItWorks() {
               <div
                 key={step.title}
                 className="
-                  bg-slate-50
+                  bg-surface
                   border
-                  border-slate-200
+                  border-border
                   rounded-2xl
                   p-8
                   text-center
+                  hover:shadow-card
+                  transition-all
                 "
               >
                 <div
@@ -67,21 +69,21 @@ export default function HowItWorks() {
                     h-16
                     mx-auto
                     rounded-2xl
-                    bg-violet-100
+                    bg-primary/10
                     flex
                     items-center
                     justify-center
                     mb-6
                   "
                 >
-                  <Icon className="h-8 w-8 text-violet-600" />
+                  <Icon className="h-8 w-8 text-primary" />
                 </div>
 
-                <h3 className="font-semibold text-xl mb-3">
+                <h3 className="font-semibold text-xl mb-3 text-text">
                   {index + 1}. {step.title}
                 </h3>
 
-                <p className="text-slate-500">
+                <p className="text-text-muted">
                   {step.description}
                 </p>
               </div>

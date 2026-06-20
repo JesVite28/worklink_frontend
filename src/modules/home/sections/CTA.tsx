@@ -1,17 +1,17 @@
 export default function CTA() {
   return (
-    <section className="py-24">
+    <section className="py-24 bg-background">
       <div className="max-w-7xl mx-auto px-6">
 
         <div
           className="
-            bg-gradient-to-r
-            from-violet-600
-            to-blue-600
             rounded-3xl
             p-12
             text-center
             text-white
+            bg-gradient-to-r
+            from-primary
+            to-secondary
           "
         >
           <h2 className="text-4xl font-bold">
@@ -28,7 +28,7 @@ export default function CTA() {
             <button
               className="
                 bg-white
-                text-violet-600
+                text-primary
                 px-8
                 py-4
                 rounded-xl
@@ -48,8 +48,9 @@ export default function CTA() {
                 py-4
                 rounded-xl
                 font-semibold
+                text-white
                 hover:bg-white
-                hover:text-violet-600
+                hover:text-primary
                 transition
               "
             >
