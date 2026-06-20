@@ -1,30 +1,37 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import HomePage from "../modules/home/HomePage";
+import Login from "../modules/auth/Login";
+import DashboardPage from "../modules/dashboard/DashboardPage";
 
 import PrivateRoute from "./PrivateRoutes";
 import PublicRoute from "./PublicRoute";
-
-function Dashboard() {
-  return <h1>Dashboard privado</h1>;
-}
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
 
-        {/* Públicas */}
+        {/* Landing */}
+        <Route
+          path="/"
+          element={<HomePage />}
+        />
+
+        {/* Login */}
         <Route element={<PublicRoute />}>
-          <Route path="/" element={<HomePage />} />
+          <Route
+            path="/login"
+            element={<Login />}
+          />
         </Route>
 
-        {/* Privadas */}
+        {/* Dashboard protegido */}
         <Route
           path="/dashboard"
           element={
             <PrivateRoute>
-              <Dashboard />
+              <DashboardPage />
             </PrivateRoute>
           }
         />

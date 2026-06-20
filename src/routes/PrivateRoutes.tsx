@@ -4,10 +4,14 @@ type Props = {
   children: React.ReactNode;
 };
 
-export default function PrivateRoute({ children }: Props) {
-  const isAuthenticated = false;
+export default function PrivateRoute({
+  children,
+}: Props) {
 
-  return isAuthenticated
+  const token =
+    localStorage.getItem("token");
+
+  return token
     ? children
-    : <Navigate to="/" replace />;
+    : <Navigate to="/login" replace />;
 }
