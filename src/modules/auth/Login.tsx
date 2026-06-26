@@ -1,144 +1,111 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { login } from "../../api/AuthApi";
+import { Link } from "react-router-dom";
+
+import Navbar from "../../shared/components/layout/Navbar";
+import Footer from "../home/components/Footer";
 
 export default function Login() {
-  const navigate = useNavigate();
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    try {
-      setLoading(true);
-      setError("");
-
-      const response = await login(email, password);
-
-      if (response.success) {
-        localStorage.setItem("token", response.data.token);
-        localStorage.setItem("user", JSON.stringify(response.data));
-
-        navigate("/dashboard");
-      }
-    } catch (err: any) {
-      setError(
-        err.response?.data?.message ||
-        "Credenciales incorrectas"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [role, setRole] = useState("cliente");
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
 
-      <div className="w-full max-w-md bg-surface rounded-2xl shadow-card border border-border p-8">
+      {/* NAVBAR */}
+      <Navbar />
 
-        <div className="flex flex-col items-center mb-8">
-          <img
-            src="/logo.png"
-            alt="WorkLink"
-            className="h-16 mb-4"
-          />
+      {/* MAIN */}
+      <main className="flex-1 flex items-center justify-center px-4 py-10">
 
-          <h1 className="text-3xl font-bold text-text">
-            Bienvenido
+        {/* CARD */}
+        <div className="w-full max-w-md bg-surface border border-border rounded-2xl shadow-xl p-6 sm:p-8">
+
+          {/* TITLE */}
+          <h1 className="text-2xl font-bold text-center mb-6">
+            Iniciar Sesión
           </h1>
 
-          <p className="text-text-muted mt-2">
-            Inicia sesión para continuar
-          </p>
-        </div>
-
-        <form onSubmit={handleLogin} className="space-y-5">
-
-          {/* Email */}
-          <div>
-            <label className="block mb-2 text-sm font-medium text-text">
-              Correo electrónico
-            </label>
-
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="
-                w-full
-                px-4 py-3
-                border border-border
-                rounded-lg
-                text-text
-                placeholder:text-text-muted
-                focus:outline-none
-                focus:ring-2
-                focus:ring-primary
-              "
-              placeholder="correo@ejemplo.com"
-            />
+          {/* ROLE SELECTOR */}
+          <div className="flex bg-muted rounded-xl p-1 mb-6">
+            {["cliente", "freelancer", "empresa"].map((item) => (
+              <button
+                key={item}
+                onClick={() => setRole(item)}
+                className={`flex-1 py-2 text-sm rounded-lg transition ${
+                  role === item
+                    ? "bg-primary text-white"
+                    : "text-foreground hover:bg-background"
+                }`}
+              >
+                {item.charAt(0).toUpperCase() + item.slice(1)}
+              </button>
+            ))}
           </div>
 
-          {/* Password */}
-          <div>
-            <label className="block mb-2 text-sm font-medium text-text">
-              Contraseña
-            </label>
+          {/* FORM */}
+          <form className="space-y-4">
 
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="
-                w-full
-                px-4 py-3
-                border border-border
-                rounded-lg
-                text-text
-                placeholder:text-text-muted
-                focus:outline-none
-                focus:ring-2
-                focus:ring-primary
-              "
-              placeholder="********"
-            />
-          </div>
-
-          {/* Error */}
-          {error && (
-            <div className="bg-danger/10 border border-danger/20 text-danger px-4 py-3 rounded-lg text-sm">
-              {error}
+            {/* EMAIL */}
+            <div>
+              <label className="text-sm font-medium">Correo electrónico</label>
+              <input
+                type="email"
+                placeholder="correo@ejemplo.com"
+                className="w-full mt-1 px-4 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+              />
             </div>
-          )}
 
-          {/* Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="
-              w-full
-              py-3
-              bg-primary
-              hover:opacity-90
-              text-white
-              font-semibold
-              rounded-lg
-              transition
-              disabled:opacity-60
-            "
-          >
-            {loading ? "Ingresando..." : "Iniciar sesión"}
-          </button>
+            {/* PASSWORD */}
+            <div>
+              <label className="text-sm font-medium">Contraseña</label>
+              <input
+                type="password"
+                placeholder="••••••••"
+                className="w-full mt-1 px-4 py-2 rounded-lg border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+              />
 
-        </form>
+              {/* LINKS */}
+              <div className="flex justify-end mt-2">
+                <Link
+                  to="/forgot-password"
+                  className="text-sm text-primary hover:underline"
+                >
+                  ¿Olvidaste tu contraseña?
+                </Link>
+              </div>
+            </div>
 
-      </div>
+            {/* LOGIN BUTTON */}
+            <button
+              type="submit"
+              className="w-full bg-primary text-white py-2 rounded-lg font-medium hover:opacity-90 transition"
+            >
+              Iniciar sesión
+            </button>
 
+            {/* BIOMETRIC */}
+            <button
+              type="button"
+              className="w-full flex items-center justify-center gap-2 border border-border py-2 rounded-lg hover:bg-muted transition"
+            >
+              <span>🔒</span>
+              Usar autenticación biométrica
+            </button>
+
+          </form>
+
+          {/* REGISTER */}
+          <p className="text-center text-sm mt-6">
+            ¿No tienes cuenta?{" "}
+            <Link to="/register" className="text-primary font-medium hover:underline">
+              Regístrate
+            </Link>
+          </p>
+
+        </div>
+      </main>
+
+      {/* FOOTER */}
+      <Footer />
     </div>
   );
 }
