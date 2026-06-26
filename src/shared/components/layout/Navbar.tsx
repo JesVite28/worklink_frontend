@@ -11,12 +11,11 @@ export default function Navbar() {
         <div className="h-20 flex items-center justify-between">
 
           {/* Logo */}
-          <div className="flex items-center gap-3">
-            <img
-              src="/logo.png"
-              alt="WorkLink"
-              className="h-10 w-auto"
-            />
+          <div
+            className="flex items-center gap-3 cursor-pointer"
+            onClick={() => navigate("/")}
+          >
+            <img src="/logo.png" alt="WorkLink" className="h-10 w-auto" />
 
             <span className="font-bold text-xl text-text">
               WorkLink
@@ -25,12 +24,13 @@ export default function Navbar() {
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center gap-8 text-text-muted">
-            <a
-              href="#"
+
+            <button
+              onClick={() => navigate("/freelancers")}
               className="hover:text-primary transition"
             >
               Explorar Servicios
-            </a>
+            </button>
 
             <a
               href="#"
@@ -43,7 +43,6 @@ export default function Navbar() {
           {/* Actions */}
           <div className="flex items-center gap-3">
 
-            {/* 🌙 Theme Toggle */}
             <ThemeToggle />
 
             <button
