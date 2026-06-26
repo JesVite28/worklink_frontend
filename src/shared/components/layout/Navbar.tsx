@@ -32,10 +32,7 @@ export default function Navbar() {
               Explorar Servicios
             </button>
 
-            <a
-              href="#"
-              className="hover:text-primary transition"
-            >
+            <a href="#" className="hover:text-primary transition">
               Publicar Empleo
             </a>
           </nav>
@@ -45,6 +42,7 @@ export default function Navbar() {
 
             <ThemeToggle />
 
+            {/* LOGIN */}
             <button
               onClick={() => navigate("/login")}
               className="
@@ -60,7 +58,9 @@ export default function Navbar() {
               Iniciar sesión
             </button>
 
+            {/* REGISTER (YA CON FUNCIONALIDAD) */}
             <button
+              onClick={() => navigate("/register")}
               className="
                 px-5 py-2
                 rounded-lg
