@@ -5,7 +5,7 @@ import FreelancerFilters from "../components/FreelancerFilters";
 import FreelancerCard from "../components/FreelancerCard";
 
 import Navbar from "../../../shared/components/layout/Navbar";
-import Footer from "../../home/components/Footer";
+import Footer from "../../../shared/components/layout/Footer";
 
 export default function FreelancersPage() {
   const [search, setSearch] = useState("");

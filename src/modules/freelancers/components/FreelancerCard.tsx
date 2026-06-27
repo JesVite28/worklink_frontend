@@ -1,7 +1,9 @@
 import { StarIcon, HeartIcon } from "@heroicons/react/24/solid";
 
+import type { Freelancer } from "../models/freelancer";
+
 interface Props {
-  freelancer: any;
+  freelancer: Freelancer;
 }
 
 export default function FreelancerCard({ freelancer }: Props) {
