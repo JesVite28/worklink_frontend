@@ -1,14 +1,13 @@
 import Navbar from "../../shared/components/layout/Navbar";
-import Hero from "./sections/Hero";
-import Search from "./sections/Search";
-import Stats from "./sections/Stats";
-import Categories from "./sections/Categories";
-import Freelancers from "./sections/Freelancers";
-import Companies from "./sections/Companies";
-import HowItWorks from "./sections/HowItWorks";
-import Testimonials from "./sections/Testimonials";
-import CTA from "./sections/CTA";
-import Footer from "./sections/Footer";
+import Hero from "./components/Hero";
+import Search from "./components/Search";
+import Stats from "./components/Stats";
+import Categories from "./components/Categories";
+import Companies from "./components/Companies";
+import HowItWorks from "./components/HowItWorks";
+import Testimonials from "./components/Testimonials";
+import CTA from "./components/CTA";
+import Footer from "./components/Footer";
 
 export default function HomePage() {
   return (
@@ -18,7 +17,6 @@ export default function HomePage() {
       <Search />
       <Stats />
       <Categories />
-      <Freelancers />
       <Companies />
       <HowItWorks />
       <Testimonials />
