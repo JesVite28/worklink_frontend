@@ -2,7 +2,7 @@ import Container from "../../../shared/components/layout/Container";
 
 export default function Hero() {
   return (
-    <section className="py-20">
+    <section className="py-20 bg-background">
       <Container>
 
         <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -16,8 +16,8 @@ export default function Hero() {
                 px-4
                 py-2
                 rounded-full
-                bg-violet-100
-                text-violet-700
+                bg-primary/10
+                text-primary
                 font-medium
                 mb-6
               "
@@ -32,7 +32,7 @@ export default function Hero() {
                 lg:text-6xl
                 font-bold
                 leading-tight
-                text-slate-900
+                text-text
               "
             >
               Conecta con el talento local que necesitas
@@ -40,7 +40,7 @@ export default function Hero() {
 
             <p
               className="
-                text-slate-600
+                text-text-muted
                 text-lg
                 mt-6
                 max-w-xl
@@ -56,8 +56,8 @@ export default function Hero() {
 
               <button
                 className="
-                  bg-violet-600
-                  hover:bg-violet-700
+                  bg-primary
+                  hover:opacity-90
                   text-white
                   px-8
                   py-4
@@ -72,12 +72,13 @@ export default function Hero() {
               <button
                 className="
                   border
-                  border-slate-300
-                  hover:border-slate-400
+                  border-border
+                  hover:border-primary
                   px-8
                   py-4
                   rounded-xl
                   font-semibold
+                  text-text
                   transition
                 "
               >
@@ -94,11 +95,11 @@ export default function Hero() {
             <div
               className="
                 bg-gradient-to-br
-                from-violet-600
-                to-blue-600
+                from-primary
+                to-secondary
                 rounded-3xl
                 p-8
-                shadow-2xl
+                shadow-card
                 w-full
                 max-w-2xl
               "
@@ -106,11 +107,7 @@ export default function Hero() {
               <img
                 src="/freelancer.png"
                 alt="Freelancer WorkLink"
-                className="
-                  w-full
-                  h-auto
-                  object-contain
-                "
+                className="w-full h-auto object-contain"
               />
             </div>
 

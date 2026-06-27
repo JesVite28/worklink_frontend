@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="bg-slate-900 text-white py-16">
+    <footer className="bg-background text-text py-16">
       <div className="max-w-7xl mx-auto px-6">
 
         <div className="grid md:grid-cols-4 gap-10">
@@ -12,17 +12,17 @@ export default function Footer() {
               className="h-12 mb-4"
             />
 
-            <p className="text-slate-400">
+            <p className="text-text-muted">
               Plataforma que conecta talento local con empresas y oportunidades.
             </p>
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4">
+            <h3 className="font-semibold mb-4 text-text">
               Plataforma
             </h3>
 
-            <ul className="space-y-2 text-slate-400">
+            <ul className="space-y-2 text-text-muted">
               <li>Servicios</li>
               <li>Empleos</li>
               <li>Empresas</li>
@@ -30,11 +30,11 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4">
+            <h3 className="font-semibold mb-4 text-text">
               Recursos
             </h3>
 
-            <ul className="space-y-2 text-slate-400">
+            <ul className="space-y-2 text-text-muted">
               <li>Ayuda</li>
               <li>Preguntas frecuentes</li>
               <li>Contacto</li>
@@ -42,11 +42,11 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="font-semibold mb-4">
+            <h3 className="font-semibold mb-4 text-text">
               Legal
             </h3>
 
-            <ul className="space-y-2 text-slate-400">
+            <ul className="space-y-2 text-text-muted">
               <li>Términos</li>
               <li>Privacidad</li>
             </ul>
@@ -54,7 +54,7 @@ export default function Footer() {
 
         </div>
 
-        <div className="border-t border-slate-800 mt-12 pt-8 text-center text-slate-500">
+        <div className="border-t border-border mt-12 pt-8 text-center text-text-muted">
           © 2026 WorkLink. Todos los derechos reservados.
         </div>
 

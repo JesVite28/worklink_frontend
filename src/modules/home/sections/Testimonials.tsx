@@ -3,19 +3,19 @@ import { testimonials } from "../data/Testimonials";
 
 export default function Testimonials() {
   return (
-    <section className="py-24 bg-slate-50">
+    <section className="py-24 bg-background">
       <div className="max-w-7xl mx-auto px-6">
 
         <div className="text-center mb-16">
-          <span className="text-blue-600 font-semibold">
+          <span className="text-primary font-semibold">
             Testimonios
           </span>
 
-          <h2 className="text-4xl font-bold mt-2">
+          <h2 className="text-4xl font-bold mt-2 text-text">
             Lo que dicen nuestros usuarios
           </h2>
 
-          <p className="text-slate-500 mt-4">
+          <p className="text-text-muted mt-4">
             Profesionales y empresas que ya utilizan WorkLink.
           </p>
         </div>
@@ -26,10 +26,10 @@ export default function Testimonials() {
             <div
               key={testimonial.id}
               className="
-                bg-white
+                bg-surface
                 rounded-2xl
                 border
-                border-slate-200
+                border-border
                 p-8
                 shadow-sm
               "
@@ -38,21 +38,21 @@ export default function Testimonials() {
                 {[...Array(5)].map((_, index) => (
                   <StarIcon
                     key={index}
-                    className="h-5 w-5 text-yellow-400"
+                    className="h-5 w-5 text-warning"
                   />
                 ))}
               </div>
 
-              <p className="text-slate-600 mb-6">
+              <p className="text-text-muted mb-6">
                 "{testimonial.comment}"
               </p>
 
               <div>
-                <h4 className="font-semibold">
+                <h4 className="font-semibold text-text">
                   {testimonial.name}
                 </h4>
 
-                <span className="text-sm text-slate-500">
+                <span className="text-sm text-text-muted">
                   {testimonial.role}
                 </span>
               </div>
