@@ -4,6 +4,7 @@ import HomePage from "../modules/home/HomePage";
 import Login from "../modules/auth/Login";
 import DashboardPage from "../modules/dashboard/DashboardPage";
 import FreelancersPage from "../modules/freelancers/pages/FreelancersPage";
+import RegisterPage from "../modules/auth/Register";
 
 import PrivateRoute from "./PrivateRoutes";
 import PublicRoute from "./PublicRoute";
@@ -40,6 +41,7 @@ export default function AppRoutes() {
   path="/freelancers"
   element={<FreelancersPage />}
 />
+<Route path="/register" element={<RegisterPage />} />
 
       </Routes>
     </BrowserRouter>
