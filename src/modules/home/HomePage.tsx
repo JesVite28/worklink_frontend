@@ -1,4 +1,4 @@
-import Navbar from "../../components/layout/Navbar";
+import Navbar from "../../shared/components/layout/Navbar";
 import Hero from "./sections/Hero";
 import Search from "./sections/Search";
 import Stats from "./sections/Stats";
@@ -8,7 +8,7 @@ import Companies from "./sections/Companies";
 import HowItWorks from "./sections/HowItWorks";
 import Testimonials from "./sections/Testimonials";
 import CTA from "./sections/CTA";
-import Footer from "./sections/footer";
+import Footer from "./sections/Footer";
 
 export default function HomePage() {
   return (
@@ -23,7 +23,7 @@ export default function HomePage() {
       <HowItWorks />
       <Testimonials />
       <CTA />
-    <Footer />
+      <Footer />
     </>
   );
 }

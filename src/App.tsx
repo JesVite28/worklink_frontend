@@ -1,5 +1,7 @@
-import HomePage from "./modules/home/HomePage"
+import AppRoutes from "./routes/AppRoutes";
 
-export default function App() {
-  return <HomePage />
+function App() {
+  return <AppRoutes />;
 }
+
+export default App;
