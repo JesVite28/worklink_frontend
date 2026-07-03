@@ -1,13 +1,13 @@
 import { Navigate, Outlet } from "react-router-dom";
 
+import { useAuthSession } from "../modules/auth/hooks/useAuthSession";
+
 export default function PublicRoute() {
+  const { isAuthenticated, isAdmin } = useAuthSession();
 
-  const token =
-    localStorage.getItem("token");
-
-  return token
+  return isAuthenticated
     ? <Navigate
-        to="/dashboard"
+        to={isAdmin ? "/admin" : "/dashboard"}
         replace
       />
     : <Outlet />;

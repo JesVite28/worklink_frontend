@@ -1,5 +1,7 @@
 import { Navigate } from "react-router-dom";
 
+import { useAuthSession } from "../modules/auth/hooks/useAuthSession";
+
 type Props = {
   children: React.ReactNode;
 };
@@ -7,11 +9,9 @@ type Props = {
 export default function PrivateRoute({
   children,
 }: Props) {
+  const { isAuthenticated } = useAuthSession();
 
-  const token =
-    localStorage.getItem("token");
-
-  return token
+  return isAuthenticated
     ? children
     : <Navigate to="/login" replace />;
 }

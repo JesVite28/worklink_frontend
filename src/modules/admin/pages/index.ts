@@ -1,0 +1,12 @@
+export { default as AdminPage } from "./AdminPage";
+export { default as AdminDashboardPage } from "./AdminDashboardPage";
+export { default as AdminUsersPage } from "./AdminUsersPage";
+export { default as AdminCompaniesPage } from "./AdminCompaniesPage";
+export { default as AdminFreelancersPage } from "./AdminFreelancersPage";
+export { default as AdminVacanciesPage } from "./AdminVacanciesPage";
+export { default as AdminServicesPage } from "./AdminServicesPage";
+export { default as AdminRequestsPage } from "./AdminRequestsPage";
+export { default as AdminChatsPage } from "./AdminChatsPage";
+export { default as AdminReviewsPage } from "./AdminReviewsPage";
+export { default as AdminReportsPage } from "./AdminReportsPage";
+export { default as AdminSettingsPage } from "./AdminSettingsPage";

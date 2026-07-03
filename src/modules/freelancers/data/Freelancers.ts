@@ -1,4 +1,6 @@
-export const freelancers = [
+import type { Freelancer } from "../models/freelancer";
+
+export const freelancers: Freelancer[] = [
   {
     id: 1,
     name: "Carlos Pérez",
