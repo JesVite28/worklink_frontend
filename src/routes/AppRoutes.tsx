@@ -6,6 +6,7 @@ import DashboardPage from "../modules/dashboard/pages/DashboardPage";
 import FreelancersPage from "../modules/freelancers/pages/FreelancersPage";
 import RegisterPage from "../modules/auth/pages/RegisterPage";
 import PostJobPage from "../modules/jobs/pages/PostJobPage";
+import ChatBot from "../modules/chatbot/components/ChatbotWidget"
 
 import {
   AdminChatsPage,
@@ -28,6 +29,7 @@ import PublicRoute from "./PublicRoute";
 export default function AppRoutes() {
   return (
     <BrowserRouter>
+
       <Routes>
         {/* Rutas públicas para usuario sin cuenta */}
         <Route path="/" element={<HomePage />} />
@@ -72,6 +74,7 @@ export default function AppRoutes() {
           <Route path="configuracion" element={<AdminSettingsPage />} />
         </Route>
       </Routes>
+      <ChatBot />
     </BrowserRouter>
   );
 }
