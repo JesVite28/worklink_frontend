@@ -1,18 +1,14 @@
-import { useNavigate } from "react-router-dom";
-
-import { useAuthSession } from "../../auth/hooks/useAuthSession";
-import type { UserData } from "../../auth/models/authResponse";
-
-type UserRole = NonNullable<UserData["roles"]>[number];
+import { useDashboardPage } from "../hooks/useDashboardPage";
 
 export default function DashboardPage() {
-  const navigate = useNavigate();
-  const { user, logout } = useAuthSession();
-
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-  };
+  const {
+    fullName,
+    email,
+    accountType,
+    primaryRole,
+    handleLogout,
+    isLoggingOut,
+  } = useDashboardPage();
 
   return (
     <div className="min-h-screen bg-background">
@@ -26,6 +22,7 @@ export default function DashboardPage() {
 
           <button
             onClick={handleLogout}
+            disabled={isLoggingOut}
             className="
               px-4 py-2
               rounded-lg
@@ -33,9 +30,11 @@ export default function DashboardPage() {
               text-white
               hover:opacity-90
               transition
+              disabled:opacity-60
+              disabled:cursor-not-allowed
             "
           >
-            Cerrar sesión
+            {isLoggingOut ? "Cerrando..." : "Cerrar sesión"}
           </button>
         </div>
       </header>
@@ -43,7 +42,7 @@ export default function DashboardPage() {
       <main className="max-w-7xl mx-auto p-8">
         <div className="bg-surface border border-border rounded-2xl shadow-sm p-8">
           <h2 className="text-3xl font-bold text-text">
-            Bienvenido {user?.nombre ?? "Usuario"}
+            Bienvenido {fullName}
           </h2>
 
           <p className="text-text-muted mt-2">
@@ -54,20 +53,22 @@ export default function DashboardPage() {
             <div className="bg-info/10 border border-info/20 rounded-xl p-5">
               <h3 className="font-semibold mb-2 text-text">Correo</h3>
 
-              <p className="text-text-muted">{user?.email ?? "-"}</p>
+              <p className="text-text-muted">{email}</p>
             </div>
 
             <div className="bg-primary/10 border border-primary/20 rounded-xl p-5">
               <h3 className="font-semibold mb-2 text-text">Tipo de cuenta</h3>
 
-              <p className="text-text-muted">{user?.tipo_cuenta ?? "-"}</p>
+              <p className="text-text-muted capitalize">
+                {accountType}
+              </p>
             </div>
 
             <div className="bg-success/10 border border-success/20 rounded-xl p-5">
               <h3 className="font-semibold mb-2 text-text">Roles</h3>
 
-              <p className="text-text-muted">
-                {user?.rol?.nombre ?? user?.roles?.map((rol: UserRole) => rol.nombre).join(", ") ?? "-"}
+              <p className="text-text-muted capitalize">
+                {primaryRole}
               </p>
             </div>
           </div>

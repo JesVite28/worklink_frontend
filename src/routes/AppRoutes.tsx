@@ -5,6 +5,8 @@ import LoginPage from "../modules/auth/pages/LoginPage";
 import DashboardPage from "../modules/dashboard/pages/DashboardPage";
 import FreelancersPage from "../modules/freelancers/pages/FreelancersPage";
 import RegisterPage from "../modules/auth/pages/RegisterPage";
+import PostJobPage from "../modules/jobs/pages/PostJobPage";
+
 import {
   AdminChatsPage,
   AdminCompaniesPage,
@@ -27,19 +29,15 @@ export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Rutas públicas para usuario sin cuenta */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/freelancers" element={<FreelancersPage />} />
+        <Route path="/publicar-empleo" element={<PostJobPage />} />
 
-        {/* Landing */}
-        <Route
-          path="/"
-          element={<HomePage />}
-        />
-
-        {/* Login */}
+        {/* Auth público */}
         <Route element={<PublicRoute />}>
-          <Route
-            path="/login"
-            element={<LoginPage />}
-          />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
         </Route>
 
         {/* Dashboard protegido */}
@@ -52,6 +50,7 @@ export default function AppRoutes() {
           }
         />
 
+        {/* Admin protegido */}
         <Route
           path="/admin"
           element={
@@ -61,54 +60,17 @@ export default function AppRoutes() {
           }
         >
           <Route index element={<AdminDashboardPage />} />
-          <Route
-            path="usuarios"
-            element={<AdminUsersPage />}
-          />
-          <Route
-            path="empresas"
-            element={<AdminCompaniesPage />}
-          />
-          <Route
-            path="freelancers"
-            element={<AdminFreelancersPage />}
-          />
-          <Route
-            path="vacantes"
-            element={<AdminVacanciesPage />}
-          />
-          <Route
-            path="servicios"
-            element={<AdminServicesPage />}
-          />
-          <Route
-            path="solicitudes"
-            element={<AdminRequestsPage />}
-          />
-          <Route
-            path="chats"
-            element={<AdminChatsPage />}
-          />
-          <Route
-            path="resenas"
-            element={<AdminReviewsPage />}
-          />
-          <Route
-            path="reportes"
-            element={<AdminReportsPage />}
-          />
-          <Route
-            path="configuracion"
-            element={<AdminSettingsPage />}
-          />
+          <Route path="usuarios" element={<AdminUsersPage />} />
+          <Route path="empresas" element={<AdminCompaniesPage />} />
+          <Route path="freelancers" element={<AdminFreelancersPage />} />
+          <Route path="vacantes" element={<AdminVacanciesPage />} />
+          <Route path="servicios" element={<AdminServicesPage />} />
+          <Route path="solicitudes" element={<AdminRequestsPage />} />
+          <Route path="chats" element={<AdminChatsPage />} />
+          <Route path="resenas" element={<AdminReviewsPage />} />
+          <Route path="reportes" element={<AdminReportsPage />} />
+          <Route path="configuracion" element={<AdminSettingsPage />} />
         </Route>
-
-        <Route
-          path="/freelancers"
-          element={<FreelancersPage />}
-        />
-        <Route path="/register" element={<RegisterPage />} />
-
       </Routes>
     </BrowserRouter>
   );

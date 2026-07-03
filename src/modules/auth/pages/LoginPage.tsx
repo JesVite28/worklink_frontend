@@ -24,7 +24,7 @@ export default function LoginPage() {
             Iniciar Sesión
           </h1>
 
-          <div className="flex bg-muted rounded-xl p-1 mb-6">
+          {/* <div className="flex bg-muted rounded-xl p-1 mb-6">
             {["cliente", "freelancer", "empresa"].map((item) => (
               <button
                 key={item}
@@ -39,7 +39,7 @@ export default function LoginPage() {
                 {item.charAt(0).toUpperCase() + item.slice(1)}
               </button>
             ))}
-          </div>
+          </div> */}
 
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>

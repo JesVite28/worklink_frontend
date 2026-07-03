@@ -1,52 +1,41 @@
 const stats = [
   {
     value: "500+",
-    label: "Freelancers"
+    label: "Freelancers",
   },
   {
     value: "200+",
-    label: "Empresas"
+    label: "Empresas",
   },
   {
     value: "1000+",
-    label: "Proyectos"
+    label: "Proyectos",
   },
   {
     value: "95%",
-    label: "Satisfacción"
-  }
+    label: "Satisfacción",
+  },
 ];
 
 export default function Stats() {
   return (
-    <section className="py-16 bg-background">
-      <div className="max-w-6xl mx-auto px-6">
-
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-
+    <section className="bg-background py-12 sm:py-14 lg:py-16">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4">
           {stats.map((stat) => (
             <div
               key={stat.label}
-              className="
-                bg-surface
-                rounded-2xl
-                p-6
-                text-center
-                border
-                border-border
-                shadow-sm
-              "
+              className="rounded-2xl border border-border bg-surface p-4 text-center shadow-sm sm:p-6"
             >
-              <h3 className="text-3xl font-bold text-primary">
+              <h3 className="text-2xl font-bold text-primary sm:text-3xl">
                 {stat.value}
               </h3>
 
-              <p className="text-text-muted mt-2">
+              <p className="mt-2 text-sm text-text-muted sm:text-base">
                 {stat.label}
               </p>
             </div>
           ))}
-
         </div>
       </div>
     </section>

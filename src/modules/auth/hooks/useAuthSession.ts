@@ -12,14 +12,22 @@ function readStoredUser(): UserData | null {
   try {
     return JSON.parse(rawUser) as UserData;
   } catch {
+    localStorage.removeItem("user");
     return null;
   }
 }
 
+function getPrimaryRole(user: UserData | null): string | null {
+  return user?.role?.name ?? user?.roles?.[0]?.name ?? null;
+}
+
 export function useAuthSession() {
   const token = localStorage.getItem("token");
+
   const user = useMemo(() => readStoredUser(), []);
-  const primaryRole = user?.rol?.nombre ?? user?.roles?.[0]?.nombre ?? null;
+
+  const primaryRole = getPrimaryRole(user);
+
   const isAdmin = primaryRole?.toLowerCase() === "admin";
 
   const logout = () => {

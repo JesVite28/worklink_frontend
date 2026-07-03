@@ -41,24 +41,30 @@ export default function Sidebar({ collapsed, mobileOpen, onToggleCollapse, onClo
   return (
     <>
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-72 bg-gradient-to-b from-primary-strong to-secondary-strong text-white transition-transform duration-300 lg:static lg:translate-x-0 ${
-          mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-        } ${collapsed ? "lg:w-24" : "lg:w-72"}`}
+        className={`fixed inset-y-0 left-0 z-40 w-72 bg-gradient-to-b from-primary-strong to-secondary-strong text-white transition-transform duration-300 lg:static lg:translate-x-0 ${mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+          } ${collapsed ? "lg:w-24" : "lg:w-72"}`}
       >
         <div className="flex h-20 items-center justify-between px-5 border-b border-white/10">
           {!collapsed ? (
-            <div>
-              <p className="text-xs uppercase tracking-[0.24em] text-white/60">WorkLink</p>
-              <h1 className="text-lg font-semibold">Panel Admin</h1>
+            <div className="flex items-center gap-3">
+              <img
+                src="/logob.png"
+                alt="WorkLink"
+                className="h-10 w-auto shrink-0 sm:h-20"
+              />
+              <h1 className="text-lg font-semibold">
+                Panel Admin
+              </h1>
             </div>
           ) : (
-            <span className="text-lg font-semibold">WL</span>
+            <span className="font-semibold"><img src="/logob.png" alt="WorkLink" className="h-10 w-auto shrink-0 sm:h-10"/>
+            </span>
           )}
 
           <button
             type="button"
             onClick={onToggleCollapse}
-            className="hidden lg:inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 transition"
+            className="hidden lg:inline-flex h-7 w-7 items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 transition"
           >
             <Bars3Icon className="h-5 w-5" />
           </button>

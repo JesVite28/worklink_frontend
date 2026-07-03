@@ -109,3 +109,49 @@ body {
 .accent-ring {
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.20);
 }
+
+.input {
+  width: 100%;
+  min-height: 46px;
+  padding: 0.75rem 1rem;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  border-color: var(--color-border);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 25%, transparent);
+}
+
+.chatbot-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.chatbot-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chatbot-scroll::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--color-primary) 45%, transparent);
+  border-radius: 999px;
+}
+
+.chatbot-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+.chatbot-markdown {
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+
+.chatbot-markdown p:last-child {
+  margin-bottom: 0;
+}

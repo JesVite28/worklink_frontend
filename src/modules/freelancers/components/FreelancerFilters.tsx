@@ -5,7 +5,7 @@ interface Props {
 
 export default function FreelancerFilters({ filter, setFilter }: Props) {
   return (
-    <aside className="w-full max-w-sm bg-surface border border-border rounded-2xl p-5 shadow-sm">
+    <aside className="w-full bg-surface border border-border rounded-2xl p-4 sm:p-5 shadow-sm">
 
       {/* HEADER */}
       <div className="flex items-center gap-2 mb-6">
@@ -19,7 +19,7 @@ export default function FreelancerFilters({ filter, setFilter }: Props) {
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="w-full border border-border rounded-lg p-2 bg-surface text-text"
+          className="w-full border border-border rounded-lg p-2 bg-surface text-text text-sm sm:text-base"
         >
           <option value="Todos">Todas las categorías</option>
           <option value="Frontend">Frontend</option>
@@ -46,7 +46,7 @@ export default function FreelancerFilters({ filter, setFilter }: Props) {
           Tiempo de Entrega
         </p>
 
-        <div className="space-y-2 text-sm text-text">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2 text-sm text-text">
           {["24 horas", "3 días", "7 días", "Más de 7 días"].map((item) => (
             <label key={item} className="flex items-center gap-2">
               <input type="checkbox" className="accent-primary" />
@@ -62,7 +62,7 @@ export default function FreelancerFilters({ filter, setFilter }: Props) {
           Calificación
         </p>
 
-        <div className="space-y-2 text-sm text-text">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2 text-sm text-text">
           {["5+ estrellas", "4+ estrellas", "3+ estrellas"].map((item) => (
             <label key={item} className="flex items-center gap-2">
               <input type="checkbox" className="accent-primary" />

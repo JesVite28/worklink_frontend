@@ -1,21 +1,31 @@
 export interface Role {
   id: number;
-  nombre: string;
+  name: string;
+  description?: string;
 }
 
 export interface UserData {
-  token: string;
   id: number;
-  nombre: string;
-  apellido: string;
+  name: string;
+  last_name: string;
+  maternal_last_name?: string | null;
   email: string;
-  tipo_cuenta: string;
-  rol?: Role;
+  phone?: string | null;
+  profile_photo?: string | null;
+  profile_photo_url?: string | null;
+  account_type?: string;
+  is_active?: boolean;
+  role?: Role;
   roles?: Role[];
+}
+
+export interface AuthData {
+  token: string;
+  user: UserData;
 }
 
 export interface AuthResponse {
   success: boolean;
   message: string;
-  data: UserData;
+  data: AuthData;
 }

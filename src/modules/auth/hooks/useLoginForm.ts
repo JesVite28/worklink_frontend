@@ -1,8 +1,10 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import { isAxiosError } from "axios";
 
 import { showError, showSuccess } from "../../../shared/services/alertService";
 import { login } from "../services/authService";
+import type { UserData } from "../models/authResponse";
 
 type LoginFormState = {
   email: string;
@@ -14,12 +16,19 @@ const initialState: LoginFormState = {
   password: "",
 };
 
-function getRedirectPath(roleName: string | null) {
+function getPrimaryRoleName(user: UserData): string | null {
+  return user.role?.name ?? user.roles?.[0]?.name ?? null;
+}
+
+function getRedirectPath(user: UserData) {
+  const roleName = getPrimaryRoleName(user);
+
   return roleName?.toLowerCase() === "admin" ? "/admin" : "/dashboard";
 }
 
 export function useLoginForm() {
   const navigate = useNavigate();
+
   const [form, setForm] = useState<LoginFormState>(initialState);
   const [selectedRole, setSelectedRole] = useState("cliente");
   const [isLoading, setIsLoading] = useState(false);
@@ -36,21 +45,34 @@ export function useLoginForm() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    if (!form.email.trim() || !form.password.trim()) {
+      await showError("Ingresa tu correo y contraseña.");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       const response = await login(form.email, form.password);
 
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("user", JSON.stringify(response.data));
+      const { token, user } = response.data;
 
-      const roleName = response.data.rol?.nombre ?? null;
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
 
       await showSuccess(response.message || "Login exitoso");
-      navigate(getRedirectPath(roleName), { replace: true });
+
+      navigate(getRedirectPath(user), { replace: true });
     } catch (error) {
       console.error(error);
-      await showError("No fue posible iniciar sesión. Verifica tus credenciales.");
+
+      let message = "No fue posible iniciar sesión. Verifica tus credenciales.";
+
+      if (isAxiosError(error)) {
+        message = error.response?.data?.message || message;
+      }
+
+      await showError(message);
     } finally {
       setIsLoading(false);
     }

@@ -8,10 +8,10 @@ interface Props {
 
 export default function FreelancerCard({ freelancer }: Props) {
   return (
-    <div className="bg-surface border border-border rounded-2xl overflow-hidden hover:shadow-xl transition relative">
+    <div className="bg-surface border border-border rounded-2xl overflow-hidden hover:shadow-xl transition relative h-full flex flex-col">
 
       {/* IMAGE */}
-      <div className="h-52 w-full overflow-hidden relative">
+      <div className="h-44 sm:h-52 w-full overflow-hidden relative">
         <img
           src={freelancer.image}
           alt={freelancer.name}
@@ -24,15 +24,15 @@ export default function FreelancerCard({ freelancer }: Props) {
         </button>
       </div>
 
-      <div className="p-5">
+      <div className="p-4 sm:p-5 flex flex-col flex-1">
 
         {/* USER */}
-        <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-text">
+        <div className="flex items-start justify-between gap-3">
+          <h3 className="font-semibold text-text min-w-0 truncate">
             {freelancer.name}
           </h3>
 
-          <div className="flex items-center gap-1 text-sm">
+          <div className="flex items-center gap-1 text-sm shrink-0">
             <StarIcon className="h-4 w-4 text-yellow-400" />
             <span>{freelancer.rating}</span>
           </div>
@@ -56,7 +56,7 @@ export default function FreelancerCard({ freelancer }: Props) {
         </div>
 
         {/* FOOTER */}
-        <div className="mt-5 flex items-center justify-between">
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
           <div>
             <p className="text-primary font-bold text-lg">
@@ -68,7 +68,7 @@ export default function FreelancerCard({ freelancer }: Props) {
             </p>
           </div>
 
-          <button className="bg-primary text-white px-4 py-2 rounded-lg hover:opacity-90 transition">
+          <button className="w-full sm:w-auto bg-primary text-white px-4 py-2 rounded-lg hover:opacity-90 transition">
             Ver perfil
           </button>
 
