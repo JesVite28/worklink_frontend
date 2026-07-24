@@ -9,8 +9,6 @@ export default function LoginPage() {
     form,
     handleChange,
     handleSubmit,
-    selectedRole,
-    setSelectedRole,
     isLoading,
   } = useLoginForm();
 
@@ -24,22 +22,6 @@ export default function LoginPage() {
             Iniciar Sesión
           </h1>
 
-          {/* <div className="flex bg-muted rounded-xl p-1 mb-6">
-            {["cliente", "freelancer", "empresa"].map((item) => (
-              <button
-                key={item}
-                type="button"
-                onClick={() => setSelectedRole(item)}
-                className={`flex-1 py-2 text-sm rounded-lg transition ${
-                  selectedRole === item
-                    ? "bg-primary text-white"
-                    : "text-foreground hover:bg-background"
-                }`}
-              >
-                {item.charAt(0).toUpperCase() + item.slice(1)}
-              </button>
-            ))}
-          </div> */}
 
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
@@ -81,14 +63,6 @@ export default function LoginPage() {
               className="w-full bg-primary text-white py-2 rounded-lg font-medium hover:opacity-90 transition disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isLoading ? "Ingresando..." : "Iniciar sesión"}
-            </button>
-
-            <button
-              type="button"
-              className="w-full flex items-center justify-center gap-2 border border-border py-2 rounded-lg hover:bg-muted transition"
-            >
-              <span>🔒</span>
-              Usar autenticación biométrica
             </button>
           </form>
 

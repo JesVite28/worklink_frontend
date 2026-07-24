@@ -1,5 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLoginModal } from "../../../context/LoginModalContext";
 import { isAxiosError } from "axios";
 
 import {
@@ -64,6 +65,7 @@ function getRegisterErrorMessage(error: unknown) {
 
 export function useRegisterForm() {
   const navigate = useNavigate();
+  const { openLoginModal } = useLoginModal();
 
   const [form, setForm] = useState(initialState);
   const [showPassword, setShowPassword] = useState(false);
@@ -135,7 +137,8 @@ export function useRegisterForm() {
       const response = await register(payload);
 
       await showSuccess(response.message || "Cuenta registrada correctamente.");
-      navigate("/login", { replace: true });
+      // Abrir modal de login como respaldo interno
+      openLoginModal(null);
     } catch (error) {
       console.error(error);
       await showError(getRegisterErrorMessage(error));

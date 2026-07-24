@@ -1,6 +1,13 @@
 import authApi from "../../../api/axios";
 import { ENDPOINTS } from "../../../api/endpoints";
-import type { AuthResponse, UserData } from "../models/authResponse";
+
+import type {
+  AuthResponse,
+  LogoutResponse,
+  MeResponse,
+  RefreshResponse,
+  UserData,
+} from "../models/authResponse";
 
 export interface RegisterPayload {
   name: string;
@@ -9,7 +16,7 @@ export interface RegisterPayload {
   email: string;
   password: string;
   password_confirmation: string;
-  role: string;
+  role: "cliente" | "freelancer" | "empresa";
   phone?: string;
   profile_photo?: File;
 }
@@ -24,18 +31,21 @@ export interface RegisterResponse {
 
 export async function login(
   email: string,
-  password: string
+  password: string,
 ): Promise<AuthResponse> {
-  const response = await authApi.post<AuthResponse>(ENDPOINTS.LOGIN, {
-    email,
-    password,
-  });
+  const response = await authApi.post<AuthResponse>(
+    ENDPOINTS.LOGIN,
+    {
+      email,
+      password,
+    },
+  );
 
   return response.data;
 }
 
 export async function register(
-  payload: RegisterPayload
+  payload: RegisterPayload,
 ): Promise<RegisterResponse> {
   const formData = new FormData();
 
@@ -43,19 +53,28 @@ export async function register(
   formData.append("last_name", payload.last_name);
   formData.append("email", payload.email);
   formData.append("password", payload.password);
-  formData.append("password_confirmation", payload.password_confirmation);
+  formData.append(
+    "password_confirmation",
+    payload.password_confirmation,
+  );
   formData.append("role", payload.role);
 
-  if (payload.maternal_last_name) {
-    formData.append("maternal_last_name", payload.maternal_last_name);
+  if (payload.maternal_last_name?.trim()) {
+    formData.append(
+      "maternal_last_name",
+      payload.maternal_last_name,
+    );
   }
 
-  if (payload.phone) {
+  if (payload.phone?.trim()) {
     formData.append("phone", payload.phone);
   }
 
   if (payload.profile_photo) {
-    formData.append("profile_photo", payload.profile_photo);
+    formData.append(
+      "profile_photo",
+      payload.profile_photo,
+    );
   }
 
   const response = await authApi.post<RegisterResponse>(
@@ -65,18 +84,32 @@ export async function register(
       headers: {
         "Content-Type": "multipart/form-data",
       },
-    }
+    },
   );
 
   return response.data;
 }
 
 export async function me(): Promise<UserData> {
-  const response = await authApi.get<AuthResponse>(ENDPOINTS.ME);
+  const response = await authApi.get<MeResponse>(
+    ENDPOINTS.ME,
+  );
 
   return response.data.data.user;
 }
 
-export async function logout(): Promise<void> {
-  await authApi.post(ENDPOINTS.LOGOUT);
+export async function logout(): Promise<LogoutResponse> {
+  const response = await authApi.post<LogoutResponse>(
+    ENDPOINTS.LOGOUT,
+  );
+
+  return response.data;
+}
+
+export async function refreshToken(): Promise<string> {
+  const response = await authApi.post<RefreshResponse>(
+    ENDPOINTS.REFRESH,
+  );
+
+  return response.data.data.token;
 }

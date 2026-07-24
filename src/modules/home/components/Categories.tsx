@@ -1,11 +1,13 @@
+import { useNavigate } from "react-router-dom";
+
 import {
-  CodeBracketIcon,
-  PaintBrushIcon,
-  ChartBarIcon,
-  CameraIcon,
-  PencilSquareIcon,
   BriefcaseIcon,
+  CameraIcon,
+  ChartBarIcon,
+  CodeBracketIcon,
   FilmIcon,
+  PaintBrushIcon,
+  PencilSquareIcon,
   WrenchScrewdriverIcon,
 } from "@heroicons/react/24/outline";
 
@@ -23,6 +25,16 @@ const icons = [
 ];
 
 export default function Categories() {
+  const navigate = useNavigate();
+
+  function handleCategoryClick(categoryName: string) {
+    const params = new URLSearchParams();
+
+    params.set("category", categoryName);
+
+    navigate(`/freelancers?${params.toString()}`);
+  }
+
   return (
     <section className="bg-background py-14 sm:py-16 lg:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -42,12 +54,17 @@ export default function Categories() {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
           {categories.map((category, index) => {
-            const Icon = icons[index];
+            const Icon =
+              icons[index] ?? BriefcaseIcon;
 
             return (
-              <div
+              <button
                 key={category.id}
-                className="h-full cursor-pointer rounded-2xl border border-border bg-surface p-5 transition-all hover:-translate-y-1 hover:shadow-card sm:p-6"
+                type="button"
+                onClick={() => {
+                  handleCategoryClick(category.name);
+                }}
+                className="h-full rounded-2xl border border-border bg-surface p-5 text-left transition-all hover:-translate-y-1 hover:border-primary/40 hover:shadow-card focus:outline-none focus:ring-2 focus:ring-primary/30 sm:p-6"
               >
                 <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10">
                   <Icon className="h-7 w-7 text-primary" />
@@ -60,7 +77,7 @@ export default function Categories() {
                 <p className="mt-2 text-sm text-text-muted sm:text-base">
                   {category.jobs} servicios
                 </p>
-              </div>
+              </button>
             );
           })}
         </div>

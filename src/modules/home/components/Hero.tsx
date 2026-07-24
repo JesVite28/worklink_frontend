@@ -1,9 +1,16 @@
 import Container from "../../../shared/components/layout/Container";
 
+import { useProtectedNavigation } from "../hooks/useProtectedNavigation";
+
 export default function Hero() {
+  const {
+    goToPublicRoute,
+    goToProtectedRoute,
+  } = useProtectedNavigation();
+
   return (
     <section className="bg-background py-12 sm:py-16 lg:py-24">
-      <Container>
+      <Container> 
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-14">
           <div className="min-w-0 text-center lg:text-left">
             <span className="mb-5 inline-flex rounded-full bg-primary/10 px-4 py-2 text-sm font-medium text-primary sm:mb-6">
@@ -21,12 +28,24 @@ export default function Hero() {
             </p>
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center lg:justify-start">
-              <button className="w-full rounded-xl bg-primary px-7 py-3.5 font-semibold text-white transition hover:opacity-90 sm:w-auto sm:px-8 sm:py-4">
+              <button
+                type="button"
+                onClick={() => {
+                  goToPublicRoute("/freelancers");
+                }}
+                className="w-full rounded-xl bg-primary px-7 py-3.5 font-semibold text-white transition hover:opacity-90 sm:w-auto sm:px-8 sm:py-4"
+              >
                 Explorar Servicios
               </button>
 
-              <button className="w-full rounded-xl border border-border px-7 py-3.5 font-semibold text-text transition hover:border-primary hover:text-primary sm:w-auto sm:px-8 sm:py-4">
-                Publicar Empleo
+              <button
+                type="button"
+                onClick={() => {
+                  goToPublicRoute("/vacantes");
+                }}
+                className="w-full rounded-xl border border-border px-7 py-3.5 font-semibold text-text transition hover:border-primary hover:text-primary sm:w-auto sm:px-8 sm:py-4"
+              >
+                Explorar vacantes
               </button>
             </div>
           </div>

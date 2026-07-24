@@ -1,25 +1,33 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useAuthSession } from "../../auth/hooks/useAuthSession";
-import { logout as logoutRequest } from "../../auth/services/authService";
+import { useAuth } from "../../../context/useAuth";
 
 export function useLogout() {
   const navigate = useNavigate();
-  const { logout } = useAuthSession();
+  const { logout } = useAuth();
+
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
-    setIsLoggingOut(true);
+    if (isLoggingOut) {
+      return;
+    }
 
     try {
-      await logoutRequest();
-    } catch (error) {
-      console.error("No fue posible cerrar sesión en el backend:", error);
-    } finally {
-      logout();
-      setIsLoggingOut(false);
+      setIsLoggingOut(true);
+
+      // Navigate to home first to avoid immediate PrivateRoute redirects
       navigate("/", { replace: true });
+
+      await logout();
+    } catch (error) {
+      console.error(
+        "No fue posible cerrar la sesión:",
+        error,
+      );
+    } finally {
+      setIsLoggingOut(false);
     }
   };
 

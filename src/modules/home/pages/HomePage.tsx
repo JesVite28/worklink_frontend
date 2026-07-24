@@ -1,5 +1,3 @@
-import Navbar from "../../../shared/components/layout/Navbar";
-import Footer from "../../../shared/components/layout/Footer";
 import Hero from "../components/Hero";
 import Search from "../components/Search";
 import Stats from "../components/Stats";
@@ -12,7 +10,6 @@ import CTA from "../components/CTA";
 export default function HomePage() {
   return (
     <>
-      <Navbar />
       <Hero />
       <Search />
       <Stats />
@@ -21,7 +18,6 @@ export default function HomePage() {
       <HowItWorks />
       <Testimonials />
       <CTA />
-      <Footer />
     </>
   );
 }

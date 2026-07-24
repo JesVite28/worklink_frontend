@@ -1,11 +1,19 @@
 import {
-  BuildingOffice2Icon,
   BriefcaseIcon,
+  BuildingOffice2Icon,
 } from "@heroicons/react/24/outline";
 
 import { companies } from "../data/Companies";
+import { useProtectedNavigation } from "../hooks/useProtectedNavigation";
 
 export default function Companies() {
+  const { goToProtectedRoute } =
+    useProtectedNavigation();
+
+  function handleViewCompany() {
+    goToProtectedRoute("/dashboard");
+  }
+
   return (
     <section className="bg-background py-14 sm:py-16 lg:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -25,9 +33,9 @@ export default function Companies() {
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
           {companies.map((company) => (
-            <div
+            <article
               key={company.id}
-              className="flex h-full flex-col rounded-2xl border border-border bg-surface p-5 transition-all hover:-translate-y-1 hover:shadow-card sm:p-6"
+              className="flex h-full flex-col rounded-2xl border border-border bg-surface p-5 transition-all hover:-translate-y-1 hover:border-primary/30 hover:shadow-card sm:p-6"
             >
               <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-primary/10">
                 <BuildingOffice2Icon className="h-8 w-8 text-primary" />
@@ -49,10 +57,14 @@ export default function Companies() {
                 </span>
               </div>
 
-              <button className="mt-5 w-full rounded-xl border border-primary py-2.5 font-medium text-primary transition hover:bg-primary hover:text-white">
+              <button
+                type="button"
+                onClick={handleViewCompany}
+                className="mt-5 w-full rounded-xl border border-primary py-2.5 font-medium text-primary transition hover:bg-primary hover:text-white"
+              >
                 Ver empresa
               </button>
-            </div>
+            </article>
           ))}
         </div>
       </div>
