@@ -32,18 +32,13 @@ authApi.interceptors.response.use(
   (error: AxiosError) => {
     const status = error.response?.status;
     const token = localStorage.getItem("token");
-
     const requestUrl = error.config?.url ?? "";
 
     const isAuthenticationRequest =
       requestUrl.includes("/login") ||
       requestUrl.includes("/register");
 
-    if (
-      status === 401 &&
-      token &&
-      !isAuthenticationRequest
-    ) {
+    if (status === 401 && token && !isAuthenticationRequest) {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
 
