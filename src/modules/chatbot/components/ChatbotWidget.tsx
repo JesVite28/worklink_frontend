@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import {
     SparklesIcon,
     PaperAirplaneIcon,
@@ -89,6 +91,55 @@ export default function ChatbotWidget() {
         handleSendMessage,
         handleClearChat,
     } = useChatbot();
+
+    useEffect(() => {
+        function clearChatAfterLogout(): void {
+            const token = localStorage.getItem("token");
+
+            if (token) {
+                return;
+            }
+
+            handleClearChat();
+            handleCloseChat();
+        }
+
+        function handleStorageChange(
+            event: StorageEvent,
+        ): void {
+            if (
+                event.key === "token" &&
+                !event.newValue
+            ) {
+                clearChatAfterLogout();
+            }
+        }
+
+        window.addEventListener(
+            "auth:session-updated",
+            clearChatAfterLogout,
+        );
+
+        window.addEventListener(
+            "storage",
+            handleStorageChange,
+        );
+
+        return () => {
+            window.removeEventListener(
+                "auth:session-updated",
+                clearChatAfterLogout,
+            );
+
+            window.removeEventListener(
+                "storage",
+                handleStorageChange,
+            );
+        };
+    }, [
+        handleClearChat,
+        handleCloseChat,
+    ]);
 
     return (
         <>
