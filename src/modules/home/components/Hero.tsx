@@ -1,12 +1,97 @@
+import { isAxiosError } from "axios";
+
+import authApi from "../../../api/axios";
+import {
+  showError,
+  showInfo,
+} from "../../../shared/services/alertService";
 import Container from "../../../shared/components/layout/Container";
 
 import { useProtectedNavigation } from "../hooks/useProtectedNavigation";
 
+interface MobileLatestResponse {
+  success: boolean;
+  message: string;
+  data: {
+    available: boolean;
+    download_url: string | null;
+  };
+}
+
+function resolveDownloadUrl(
+  downloadUrl: string,
+): string {
+  if (
+    downloadUrl.startsWith("http://") ||
+    downloadUrl.startsWith("https://")
+  ) {
+    return downloadUrl;
+  }
+
+  const apiBaseUrl =
+    authApi.defaults.baseURL ??
+    "http://127.0.0.1:8000/api";
+
+  const backendOrigin = apiBaseUrl
+    .replace(/\/api\/?$/, "")
+    .replace(/\/$/, "");
+
+  if (downloadUrl.startsWith("/")) {
+    return `${backendOrigin}${downloadUrl}`;
+  }
+
+  return `${backendOrigin}/${downloadUrl}`;
+}
+
 export default function Hero() {
-  const {
-    goToPublicRoute,
-    goToProtectedRoute,
-  } = useProtectedNavigation();
+  const { goToPublicRoute } =
+    useProtectedNavigation();
+
+  const handleDownloadMobileApp = async () => {
+    try {
+      const response =
+        await authApi.get<MobileLatestResponse>(
+          "/public/mobile/android/latest",
+        );
+
+      const payload = response.data;
+      const isAvailable =
+        payload.data?.available;
+      const downloadUrl =
+        payload.data?.download_url;
+
+      if (!isAvailable || !downloadUrl) {
+        await showInfo(
+          payload.message ||
+            "La app Android no está disponible todavía.",
+          "App móvil",
+        );
+
+        return;
+      }
+
+      window.open(
+        resolveDownloadUrl(downloadUrl),
+        "_blank",
+        "noopener,noreferrer",
+      );
+    } catch (error) {
+      if (isAxiosError(error)) {
+        const message =
+          (error.response?.data as { message?: string })
+            ?.message ||
+          "No se pudo verificar la descarga de la app móvil.";
+
+        await showError(message, "Error");
+        return;
+      }
+
+      await showError(
+        "No se pudo verificar la descarga de la app móvil.",
+        "Error",
+      );
+    }
+  };
 
   return (
     <section className="bg-background py-12 sm:py-16 lg:py-24">
@@ -46,6 +131,16 @@ export default function Hero() {
                 className="w-full rounded-xl border border-border px-7 py-3.5 font-semibold text-text transition hover:border-primary hover:text-primary sm:w-auto sm:px-8 sm:py-4"
               >
                 Explorar vacantes
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  void handleDownloadMobileApp();
+                }}
+                className="w-full rounded-xl border border-primary/30 bg-primary/10 px-7 py-3.5 font-semibold text-primary transition hover:border-primary hover:bg-primary/15 sm:w-auto sm:px-8 sm:py-4"
+              >
+                Descargar app móvil
               </button>
             </div>
           </div>
