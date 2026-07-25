@@ -1,11 +1,25 @@
 import Swal from "sweetalert2";
 
+function bringAlertToFront(): void {
+  const container =
+    Swal.getContainer();
+
+  if (container) {
+    container.style.zIndex =
+      "99999";
+  }
+}
+
 const baseOptions = {
   confirmButtonColor: "#7C3AED",
   cancelButtonColor: "#64748B",
+  didOpen: bringAlertToFront,
 };
 
-export function showSuccess(message: string, title = "Éxito") {
+export function showSuccess(
+  message: string,
+  title = "Éxito",
+) {
   return Swal.fire({
     ...baseOptions,
     icon: "success",
@@ -14,7 +28,10 @@ export function showSuccess(message: string, title = "Éxito") {
   });
 }
 
-export function showError(message: string, title = "Error") {
+export function showError(
+  message: string,
+  title = "Error",
+) {
   return Swal.fire({
     ...baseOptions,
     icon: "error",
@@ -23,7 +40,10 @@ export function showError(message: string, title = "Error") {
   });
 }
 
-export function showWarning(message: string, title = "Advertencia") {
+export function showWarning(
+  message: string,
+  title = "Advertencia",
+) {
   return Swal.fire({
     ...baseOptions,
     icon: "warning",
@@ -32,7 +52,10 @@ export function showWarning(message: string, title = "Advertencia") {
   });
 }
 
-export function showInfo(message: string, title = "Información") {
+export function showInfo(
+  message: string,
+  title = "Información",
+) {
   return Swal.fire({
     ...baseOptions,
     icon: "info",
@@ -67,7 +90,7 @@ export function showConfirm({
 export function showDelete(
   title: string,
   text: string,
-  confirmButtonText = "Eliminar"
+  confirmButtonText = "Eliminar",
 ) {
   return Swal.fire({
     ...baseOptions,
@@ -76,8 +99,10 @@ export function showDelete(
     text,
     showCancelButton: true,
     confirmButtonText,
-    cancelButtonText: "Cancelar",
-    confirmButtonColor: "#EF4444",
+    cancelButtonText:
+      "Cancelar",
+    confirmButtonColor:
+      "#EF4444",
     reverseButtons: true,
   });
 }
