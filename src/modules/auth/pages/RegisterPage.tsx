@@ -1,5 +1,6 @@
 import {
   useMemo,
+  useRef,
   useState,
   type FormEvent,
 } from "react";
@@ -109,6 +110,15 @@ export default function RegisterPage() {
     setCurrentStep,
   ] = useState<RegisterStep>(1);
 
+  /*
+   * Evita que presionar Enter o avanzar desde el paso
+   * de contraseña ejecute por accidente el registro final.
+   * Solo el botón "Crear cuenta" habilita la validación
+   * de términos y el envío real.
+   */
+  const finalSubmitRequested =
+    useRef(false);
+
   const initials = useMemo(() => {
     return [
       form.nombres?.trim().charAt(0),
@@ -140,8 +150,10 @@ export default function RegisterPage() {
       .join(" ") ||
     "Nombre pendiente";
 
-  async function validateCurrentStep(): Promise<boolean> {
-    if (currentStep === 1) {
+  async function validateStep(
+    step: RegisterStep,
+  ): Promise<boolean> {
+    if (step === 1) {
       if (!form.accountType) {
         await showWarning(
           "Selecciona el tipo de cuenta que deseas crear.",
@@ -151,14 +163,26 @@ export default function RegisterPage() {
       }
     }
 
-    if (currentStep === 2) {
-      if (
-        !form.nombres.trim() ||
-        !form.apellidoPaterno.trim() ||
-        !form.email.trim()
-      ) {
+    if (step === 2) {
+      if (!form.nombres.trim()) {
         await showWarning(
-          "Completa tu nombre, apellido paterno y correo electrónico.",
+          "Ingresa tu nombre.",
+        );
+
+        return false;
+      }
+
+      if (!form.apellidoPaterno.trim()) {
+        await showWarning(
+          "Ingresa tu apellido paterno.",
+        );
+
+        return false;
+      }
+
+      if (!form.email.trim()) {
+        await showWarning(
+          "Ingresa tu correo electrónico.",
         );
 
         return false;
@@ -173,19 +197,22 @@ export default function RegisterPage() {
       }
     }
 
-    if (currentStep === 3) {
-      if (
-        !form.password ||
-        !form.confirmPassword
-      ) {
+    if (step === 3) {
+      const password =
+        form.password ?? "";
+
+      const confirmPassword =
+        form.confirmPassword ?? "";
+
+      if (!password) {
         await showWarning(
-          "Escribe y confirma tu contraseña.",
+          "Escribe una contraseña.",
         );
 
         return false;
       }
 
-      if (form.password.length < 8) {
+      if (password.length < 8) {
         await showWarning(
           "La contraseña debe tener al menos 8 caracteres.",
         );
@@ -193,9 +220,17 @@ export default function RegisterPage() {
         return false;
       }
 
+      if (!confirmPassword) {
+        await showWarning(
+          "Confirma tu contraseña.",
+        );
+
+        return false;
+      }
+
       if (
-        form.password !==
-        form.confirmPassword
+        password !==
+        confirmPassword
       ) {
         await showWarning(
           "Las contraseñas no coinciden.",
@@ -206,7 +241,7 @@ export default function RegisterPage() {
     }
 
     if (
-      currentStep === 4 &&
+      step === 4 &&
       !form.terms
     ) {
       await showWarning(
@@ -219,21 +254,26 @@ export default function RegisterPage() {
     return true;
   }
 
-  async function goToNextStep() {
+  async function goToNextStep(): Promise<void> {
+    const stepToValidate =
+      currentStep;
+
     const isValid =
-      await validateCurrentStep();
+      await validateStep(
+        stepToValidate,
+      );
 
     if (!isValid) {
       return;
     }
 
-    setCurrentStep(
-      (previousStep) =>
-        Math.min(
-          previousStep + 1,
-          4,
-        ) as RegisterStep,
-    );
+    const nextStep =
+      Math.min(
+        stepToValidate + 1,
+        4,
+      ) as RegisterStep;
+
+    setCurrentStep(nextStep);
 
     window.scrollTo({
       top: 0,
@@ -241,7 +281,7 @@ export default function RegisterPage() {
     });
   }
 
-  function goToPreviousStep() {
+  function goToPreviousStep(): void {
     setCurrentStep(
       (previousStep) =>
         Math.max(
@@ -258,23 +298,42 @@ export default function RegisterPage() {
 
   async function handleWizardSubmit(
     event: FormEvent<HTMLFormElement>,
-  ) {
-    if (currentStep < 4) {
-      event.preventDefault();
-      await goToNextStep();
+  ): Promise<void> {
+    event.preventDefault();
 
+    /*
+     * En los pasos 1, 2 y 3, Enter o Continuar
+     * únicamente deben avanzar al siguiente paso.
+     */
+    if (currentStep < 4) {
+      finalSubmitRequested.current =
+        false;
+
+      await goToNextStep();
       return;
     }
+
+    /*
+     * En el paso 4 no se valida ni se registra
+     * por presionar Enter. Solo se continúa cuando
+     * el usuario hizo clic explícitamente en
+     * "Crear cuenta".
+     */
+    if (!finalSubmitRequested.current) {
+      return;
+    }
+
+    finalSubmitRequested.current =
+      false;
 
     const isValid =
-      await validateCurrentStep();
+      await validateStep(4);
 
     if (!isValid) {
-      event.preventDefault();
       return;
     }
 
-    handleSubmit(event);
+    await handleSubmit(event);
   }
 
   return (
@@ -376,6 +435,7 @@ export default function RegisterPage() {
           {/* Formulario guiado */}
           <form
             onSubmit={handleWizardSubmit}
+            noValidate
             className="min-w-0 rounded-[2rem] border border-border bg-surface p-5 shadow-xl sm:p-7 lg:p-9"
           >
             <div className="border-b border-border pb-6">
@@ -850,6 +910,10 @@ export default function RegisterPage() {
               ) : (
                 <button
                   type="submit"
+                  onClick={() => {
+                    finalSubmitRequested.current =
+                      true;
+                  }}
                   disabled={isLoading}
                   className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 font-semibold text-white shadow-lg shadow-primary/20 transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
                 >

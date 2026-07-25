@@ -19,7 +19,10 @@ import PublicVacancyDetailPage from "../modules/vacancies/pages/PublicVacancyDet
 
 /* Autenticación */
 import LoginPage from "../modules/auth/pages/LoginPage";
+import VerifyTwoFactorPage from "../modules/auth/pages/VerifyTwoFactorPage";
 import RegisterPage from "../modules/auth/pages/RegisterPage";
+import ForgotPasswordPage from "../modules/auth/pages/ForgotPasswordPage";
+import ResetPasswordPage from "../modules/auth/pages/ResetPasswordPage";
 
 /* Dashboard de usuarios */
 import DashboardPage from "../modules/dashboard/pages/DashboardPage";
@@ -98,8 +101,23 @@ export default function AppRoutes() {
           />
 
           <Route
+            path="/verify-2fa"
+            element={<VerifyTwoFactorPage />}
+          />
+
+          <Route
             path="/register"
             element={<RegisterPage />}
+          />
+
+          <Route
+            path="/forgot-password"
+            element={<ForgotPasswordPage />}
+          />
+
+          <Route
+            path="/reset-password"
+            element={<ResetPasswordPage />}
           />
         </Route>
 

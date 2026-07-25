@@ -1,14 +1,29 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
-import { isAxiosError } from "axios";
+import {
+  useState,
+  type ChangeEvent,
+  type FormEvent,
+} from "react";
+
+import {
+  useNavigate,
+} from "react-router-dom";
+
+import {
+  isAxiosError,
+} from "axios";
 
 import {
   showError,
   showSuccess,
 } from "../../../shared/services/alertService";
 
-import { login } from "../services/authService";
-import type { UserData } from "../models/authResponse";
+import {
+  login,
+} from "../services/authService";
+
+import type {
+  UserData,
+} from "../models/authResponse";
 
 type LoginFormState = {
   email: string;
@@ -17,15 +32,40 @@ type LoginFormState = {
 
 type LoginErrorResponse = {
   message?: string;
+
+  errors?: Record<
+    string,
+    string[]
+  >;
 };
+
+interface PendingTwoFactorLogin {
+  challengeToken: string;
+  expiresIn: number;
+  expiresAt: string;
+  email: string;
+  emailHint?: string;
+  redirectTo: string | null;
+}
+
+interface UseLoginFormOptions {
+  redirectTo?: string | null;
+  onSuccess?: () => void;
+}
 
 const initialState: LoginFormState = {
   email: "",
   password: "",
 };
 
-function getRedirectPath(user: UserData): string | null {
-  const roleName = user.role?.name;
+const TWO_FACTOR_STORAGE_KEY =
+  "worklink_pending_2fa";
+
+function getRedirectPath(
+  user: UserData,
+): string | null {
+  const roleName =
+    user.role?.name;
 
   switch (roleName) {
     case "admin":
@@ -41,113 +81,278 @@ function getRedirectPath(user: UserData): string | null {
   }
 }
 
-interface UseLoginFormOptions {
-  redirectTo?: string | null;
-  onSuccess?: () => void;
+function isAuthenticationRoute(
+  path: string | null,
+): boolean {
+  if (!path) {
+    return false;
+  }
+
+  const normalizedPath =
+    path
+      .split("?")[0]
+      .split("#")[0];
+
+  return [
+    "/login",
+    "/register",
+    "/forgot-password",
+    "/reset-password",
+    "/verify-2fa",
+  ].includes(normalizedPath);
 }
 
-export function useLoginForm(options?: UseLoginFormOptions) {
-  const navigate = useNavigate();
+function getSafeRedirect(
+  redirectTo: string | null,
+  fallback: string | null,
+): string | null {
+  if (
+    redirectTo &&
+    !isAuthenticationRoute(redirectTo)
+  ) {
+    return redirectTo;
+  }
 
-  const [form, setForm] =
-    useState<LoginFormState>(initialState);
+  return fallback;
+}
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+export function useLoginForm(
+  options?: UseLoginFormOptions,
+) {
+  const navigate =
+    useNavigate();
+
+  const [
+    form,
+    setForm,
+  ] = useState<LoginFormState>(
+    initialState,
+  );
+
+  const [
+    isLoading,
+    setIsLoading,
+  ] = useState(false);
+
+  const [
+    showPassword,
+    setShowPassword,
+  ] = useState(false);
 
   const handleChange = (
     event: ChangeEvent<HTMLInputElement>,
-  ) => {
-    const { name, value } = event.target;
+  ): void => {
+    const {
+      name,
+      value,
+    } = event.target;
 
-    setForm((previous) => ({
-      ...previous,
+    setForm((previousForm) => ({
+      ...previousForm,
       [name]: value,
     }));
   };
 
   const handleSubmit = async (
     event: FormEvent<HTMLFormElement>,
-  ) => {
+  ): Promise<void> => {
     event.preventDefault();
 
-    const email = form.email.trim();
-    const password = form.password;
+    if (isLoading) {
+      return;
+    }
 
-    if (!email || !password.trim()) {
+    const email =
+      form.email
+        .trim()
+        .toLowerCase();
+
+    const password =
+      form.password;
+
+    if (
+      !email ||
+      !password.trim()
+    ) {
       await showError(
         "Ingresa tu correo electrónico y contraseña.",
       );
+
       return;
     }
 
     setIsLoading(true);
 
     try {
-      const response = await login(email, password);
-
-      const { token, user } = response.data;
-
-      const roleRedirect = getRedirectPath(user);
-
-      // Sanitize redirect coming from options: avoid redirecting back
-      // to auth-related routes like /login, /register or /forgot-password.
-      const rawRedirect = options?.redirectTo ?? null;
-
-      const isAuthRoute = (path: string | null) => {
-        if (!path) return false;
-        const p = path.split("?")[0].split("#")[0];
-        return (
-          p === "/login" ||
-          p === "/register" ||
-          p === "/forgot-password"
+      const response =
+        await login(
+          email,
+          password,
         );
-      };
 
-      const finalRedirect = isAuthRoute(rawRedirect) ? roleRedirect : rawRedirect ?? roleRedirect;
+      /*
+      |--------------------------------------------------------------------------
+      | El usuario necesita verificar el código 2FA
+      |--------------------------------------------------------------------------
+      */
+
+      if (response.requires_2fa) {
+        const pendingChallenge:
+          PendingTwoFactorLogin = {
+          challengeToken:
+            response.data
+              .challenge_token,
+
+          expiresIn:
+            response.data
+              .expires_in,
+
+          expiresAt:
+            response.data
+              .expires_at,
+
+          email,
+
+          emailHint:
+            response.data
+              .email_hint,
+
+          redirectTo:
+            isAuthenticationRoute(
+              options?.redirectTo ??
+                null,
+            )
+              ? null
+              : options?.redirectTo ??
+                null,
+        };
+
+        sessionStorage.setItem(
+          TWO_FACTOR_STORAGE_KEY,
+          JSON.stringify(
+            pendingChallenge,
+          ),
+        );
+
+        await showSuccess(
+          response.message ||
+            "Enviamos un código de verificación a tu correo.",
+        );
+
+        /*
+         * Cierra el modal antes de abrir
+         * la pantalla de verificación.
+         */
+        options?.onSuccess?.();
+
+        navigate(
+          "/verify-2fa",
+          {
+            replace: true,
+          },
+        );
+
+        return;
+      }
+
+      /*
+      |--------------------------------------------------------------------------
+      | Login completado sin 2FA
+      |--------------------------------------------------------------------------
+      */
+
+      const {
+        token,
+        user,
+      } = response.data;
+
+      const roleRedirect =
+        getRedirectPath(user);
+
+      const finalRedirect =
+        getSafeRedirect(
+          options?.redirectTo ??
+            null,
+          roleRedirect,
+        );
 
       if (!finalRedirect) {
         await showError(
           "Tu cuenta no tiene un rol válido asignado.",
         );
+
         return;
       }
 
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem(
+        "token",
+        token,
+      );
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify(user),
+      );
+
+      sessionStorage.removeItem(
+        TWO_FACTOR_STORAGE_KEY,
+      );
 
       window.dispatchEvent(
-        new CustomEvent("auth:session-updated", {
-          detail: {
-            token,
-            user,
+        new CustomEvent(
+          "auth:session-updated",
+          {
+            detail: {
+              token,
+              user,
+            },
           },
-        }),
+        ),
       );
 
       await showSuccess(
-        response.message || "Sesión iniciada correctamente.",
+        response.message ||
+          "Sesión iniciada correctamente.",
       );
 
-      // Allow caller to react (e.g. close modal) before navigating
-      try {
-        options?.onSuccess?.();
-      } catch (e) {
-        // ignore
-      }
+      options?.onSuccess?.();
 
-      navigate(finalRedirect, {
-        replace: true,
-      });
+      navigate(
+        finalRedirect,
+        {
+          replace: true,
+        },
+      );
     } catch (error) {
-      console.error("Error al iniciar sesión:", error);
+      console.error(
+        "Error al iniciar sesión:",
+        error,
+      );
 
       let message =
         "No fue posible iniciar sesión. Verifica tus credenciales.";
 
-      if (isAxiosError<LoginErrorResponse>(error)) {
+      if (
+        isAxiosError<LoginErrorResponse>(
+          error,
+        )
+      ) {
+        const validationErrors =
+          error.response?.data
+            ?.errors;
+
+        const firstValidationError =
+          validationErrors
+            ? Object.values(
+                validationErrors,
+              )[0]?.[0]
+            : null;
+
         message =
-          error.response?.data?.message || message;
+          firstValidationError ||
+          error.response?.data
+            ?.message ||
+          message;
       }
 
       await showError(message);
@@ -160,7 +365,9 @@ export function useLoginForm(options?: UseLoginFormOptions) {
     form,
     handleChange,
     handleSubmit,
+
     isLoading,
+
     showPassword,
     setShowPassword,
   };

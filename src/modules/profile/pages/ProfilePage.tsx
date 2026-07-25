@@ -9,6 +9,7 @@ import {
 import AccountProfileForm from "../components/AccountProfileForm";
 import FreelancerProfileForm from "../components/FreelancerProfileForm";
 import CompanyProfileForm from "../components/CompanyProfileForm";
+import SecuritySettingsCard from "../components/SecuritySettingsCard";
 
 import { useProfilePage } from "../hooks/useProfilePage";
 
@@ -60,8 +61,8 @@ export default function ProfilePage() {
             </h1>
 
             <p className="mt-3 max-w-2xl text-sm leading-6 text-white/80 sm:text-base">
-              Actualiza tu información personal y administra los datos
-              correspondientes a tu tipo de cuenta.
+              Actualiza tu información personal, administra los datos de tu
+              cuenta y configura sus opciones de seguridad.
             </p>
           </div>
 
@@ -180,6 +181,9 @@ export default function ProfilePage() {
 
       {/* Información general */}
       <AccountProfileForm />
+
+      {/* Seguridad de la cuenta */}
+      <SecuritySettingsCard />
 
       {/* Perfil profesional del freelancer */}
       {!isLoadingProfile &&

@@ -2,10 +2,7 @@ import {
   CameraIcon,
   CheckIcon,
   EnvelopeIcon,
-  EyeIcon,
-  EyeSlashIcon,
   IdentificationIcon,
-  LockClosedIcon,
   PhoneIcon,
   TrashIcon,
   UserCircleIcon,
@@ -26,15 +23,6 @@ export default function AccountProfileForm() {
     handleUploadPhoto,
     handleDeletePhoto,
     cancelSelectedPhoto,
-
-    showCurrentPassword,
-    setShowCurrentPassword,
-
-    showPassword,
-    setShowPassword,
-
-    showPasswordConfirmation,
-    setShowPasswordConfirmation,
 
     hasStoredPhoto,
 
@@ -99,8 +87,8 @@ export default function AccountProfileForm() {
               </p>
 
               <p className="mt-1 text-sm leading-6 text-text-muted">
-                Puedes seleccionar una imagen JPG, PNG o WEBP con un
-                tamaño máximo de 2 MB.
+                Puedes seleccionar una imagen JPG, PNG o WEBP con un tamaño
+                máximo de 2 MB.
               </p>
             </div>
 
@@ -171,7 +159,10 @@ export default function AccountProfileForm() {
       </section>
 
       {/* Información personal */}
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-6"
+      >
         <section className="rounded-2xl border border-border bg-surface p-5 shadow-card sm:p-6">
           <div className="mb-6 flex items-start gap-3">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
@@ -257,6 +248,7 @@ export default function AccountProfileForm() {
                   type="text"
                   value={form.maternal_last_name}
                   onChange={handleChange}
+                  autoComplete="additional-name"
                   className="w-full rounded-xl border border-border bg-background py-3 pl-11 pr-4 text-text outline-none transition placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/20"
                   placeholder="Tu apellido materno"
                 />
@@ -309,165 +301,6 @@ export default function AccountProfileForm() {
                   className="w-full rounded-xl border border-border bg-background py-3 pl-11 pr-4 text-text outline-none transition placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/20"
                   placeholder="correo@ejemplo.com"
                 />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Seguridad */}
-        <section className="rounded-2xl border border-border bg-surface p-5 shadow-card sm:p-6">
-          <div className="mb-6 flex items-start gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-              <LockClosedIcon className="h-6 w-6" />
-            </div>
-
-            <div>
-              <h2 className="text-xl font-semibold text-text">
-                Seguridad
-              </h2>
-
-              <p className="mt-1 text-sm text-text-muted">
-                Completa estos campos únicamente cuando quieras cambiar
-                tu contraseña.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid gap-5 lg:grid-cols-3">
-            <div>
-              <label
-                htmlFor="current_password"
-                className="mb-2 block text-sm font-medium text-text"
-              >
-                Contraseña actual
-              </label>
-
-              <div className="relative">
-                <LockClosedIcon className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-text-muted" />
-
-                <input
-                  id="current_password"
-                  name="current_password"
-                  type={showCurrentPassword ? "text" : "password"}
-                  value={form.current_password}
-                  onChange={handleChange}
-                  autoComplete="current-password"
-                  className="w-full rounded-xl border border-border bg-background py-3 pl-11 pr-11 text-text outline-none transition placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/20"
-                  placeholder="Contraseña actual"
-                />
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setShowCurrentPassword(
-                      (previous) => !previous,
-                    )
-                  }
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted transition hover:text-primary"
-                  aria-label={
-                    showCurrentPassword
-                      ? "Ocultar contraseña actual"
-                      : "Mostrar contraseña actual"
-                  }
-                >
-                  {showCurrentPassword ? (
-                    <EyeSlashIcon className="h-5 w-5" />
-                  ) : (
-                    <EyeIcon className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor="password"
-                className="mb-2 block text-sm font-medium text-text"
-              >
-                Nueva contraseña
-              </label>
-
-              <div className="relative">
-                <LockClosedIcon className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-text-muted" />
-
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  value={form.password}
-                  onChange={handleChange}
-                  autoComplete="new-password"
-                  className="w-full rounded-xl border border-border bg-background py-3 pl-11 pr-11 text-text outline-none transition placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/20"
-                  placeholder="Mínimo 8 caracteres"
-                />
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setShowPassword((previous) => !previous)
-                  }
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted transition hover:text-primary"
-                  aria-label={
-                    showPassword
-                      ? "Ocultar nueva contraseña"
-                      : "Mostrar nueva contraseña"
-                  }
-                >
-                  {showPassword ? (
-                    <EyeSlashIcon className="h-5 w-5" />
-                  ) : (
-                    <EyeIcon className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <label
-                htmlFor="password_confirmation"
-                className="mb-2 block text-sm font-medium text-text"
-              >
-                Confirmar contraseña
-              </label>
-
-              <div className="relative">
-                <LockClosedIcon className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-text-muted" />
-
-                <input
-                  id="password_confirmation"
-                  name="password_confirmation"
-                  type={
-                    showPasswordConfirmation
-                      ? "text"
-                      : "password"
-                  }
-                  value={form.password_confirmation}
-                  onChange={handleChange}
-                  autoComplete="new-password"
-                  className="w-full rounded-xl border border-border bg-background py-3 pl-11 pr-11 text-text outline-none transition placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/20"
-                  placeholder="Repite la nueva contraseña"
-                />
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setShowPasswordConfirmation(
-                      (previous) => !previous,
-                    )
-                  }
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted transition hover:text-primary"
-                  aria-label={
-                    showPasswordConfirmation
-                      ? "Ocultar confirmación"
-                      : "Mostrar confirmación"
-                  }
-                >
-                  {showPasswordConfirmation ? (
-                    <EyeSlashIcon className="h-5 w-5" />
-                  ) : (
-                    <EyeIcon className="h-5 w-5" />
-                  )}
-                </button>
               </div>
             </div>
           </div>
