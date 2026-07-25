@@ -6,7 +6,6 @@ import {
 
 import type {
   ContractFilters as ContractFiltersType,
-  ContractStatus,
   ContractStatusFilter,
 } from "../models/contract";
 

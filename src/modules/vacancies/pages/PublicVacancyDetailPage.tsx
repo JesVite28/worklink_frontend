@@ -13,7 +13,6 @@ import type {
 import {
   Link,
   useLocation,
-  useNavigate,
   useParams,
 } from "react-router-dom";
 import { useLoginModal } from "../../../context/LoginModalContext";
@@ -148,8 +147,6 @@ export default function PublicVacancyDetailPage() {
     vacancyId: string;
   }>();
 
-  const navigate =
-    useNavigate();
 
   const location =
     useLocation();

@@ -83,7 +83,6 @@ export default function ChatbotWidget() {
         message,
         isOpen,
         isLoading,
-        isAuthenticated,
         handleToggleChat,
         handleCloseChat,
         handleChangeMessage,

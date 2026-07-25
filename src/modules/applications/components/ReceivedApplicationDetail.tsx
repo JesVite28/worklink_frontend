@@ -10,7 +10,6 @@ import {
   LinkIcon,
   MapPinIcon,
   PhoneIcon,
-  UserCircleIcon,
   WrenchScrewdriverIcon,
   XCircleIcon,
   XMarkIcon,

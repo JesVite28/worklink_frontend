@@ -18,7 +18,7 @@ function readStoredUser(): UserData | null {
 }
 
 function getPrimaryRole(user: UserData | null): string | null {
-  return user?.role?.name ?? user?.roles?.[0]?.name ?? null;
+  return user?.role?.name ?? user?.role?.name ?? null;
 }
 
 export function useAuthSession() {

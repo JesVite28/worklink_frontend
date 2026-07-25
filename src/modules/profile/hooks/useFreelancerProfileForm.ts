@@ -161,15 +161,12 @@ export function useFreelancerProfileForm({
       HTMLSelectElement
     >,
   ) => {
-    const { name, value } = event.target;
+    const target = event.target;
 
-    if (
-      event.target instanceof HTMLInputElement &&
-      event.target.type === "checkbox"
-    ) {
+    if (target instanceof HTMLInputElement && target.type === "checkbox") {
       setForm((previous) => ({
         ...previous,
-        [name]: event.target.checked,
+        [target.name]: target.checked,
       }));
 
       return;
@@ -177,7 +174,7 @@ export function useFreelancerProfileForm({
 
     setForm((previous) => ({
       ...previous,
-      [name]: value,
+      [target.name]: target.value,
     }));
   };
 
@@ -281,18 +278,18 @@ export function useFreelancerProfileForm({
       const response =
         profile
           ? await updateFreelancerProfile(
-              profile.id,
-              payload,
-            )
+            profile.id,
+            payload,
+          )
           : await createFreelancerProfile(payload);
 
       onSaved(response.data.profile);
 
       await showSuccess(
         response.message ||
-          (profile
-            ? "Perfil profesional actualizado correctamente."
-            : "Perfil profesional creado correctamente."),
+        (profile
+          ? "Perfil profesional actualizado correctamente."
+          : "Perfil profesional creado correctamente."),
       );
     } catch (error) {
       console.error(
