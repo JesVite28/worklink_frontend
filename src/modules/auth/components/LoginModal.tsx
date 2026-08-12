@@ -1,4 +1,5 @@
 import {
+  useCallback,
   useEffect,
   type MouseEvent,
 } from "react";
@@ -33,11 +34,49 @@ export default function LoginModal({
     isLoading,
     showPassword,
     setShowPassword,
+    resetForm,
   } = useLoginForm({
     redirectTo: undefined,
     onSuccess: onClose,
   });
 
+  /**
+   * Cierra el modal y limpia todos
+   * los datos del formulario.
+   */
+  const handleClose = useCallback(() => {
+    if (isLoading) {
+      return;
+    }
+
+    resetForm();
+    onClose();
+  }, [
+    isLoading,
+    onClose,
+    resetForm,
+  ]);
+
+  /**
+   * Cada vez que el modal se abre,
+   * comienza con el formulario vacío.
+   */
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    resetForm();
+  }, [
+    isOpen,
+    resetForm,
+  ]);
+
+  /**
+   * Bloquea el scroll del body mientras
+   * el modal está abierto y permite
+   * cerrarlo con Escape.
+   */
   useEffect(() => {
     if (!isOpen) {
       return;
@@ -52,8 +91,11 @@ export default function LoginModal({
     function handleEscape(
       event: KeyboardEvent,
     ) {
-      if (event.key === "Escape") {
-        onClose();
+      if (
+        event.key === "Escape" &&
+        !isLoading
+      ) {
+        handleClose();
       }
     }
 
@@ -71,19 +113,30 @@ export default function LoginModal({
         handleEscape,
       );
     };
-  }, [isOpen, onClose]);
+  }, [
+    handleClose,
+    isLoading,
+    isOpen,
+  ]);
 
+  /**
+   * Si por alguna razón el modal continúa
+   * abierto después de autenticarse,
+   * se cierra automáticamente.
+   */
   useEffect(() => {
     if (
       isOpen &&
       isAuthenticated
     ) {
+      resetForm();
       onClose();
     }
   }, [
     isAuthenticated,
     isOpen,
     onClose,
+    resetForm,
   ]);
 
   if (!isOpen) {
@@ -95,9 +148,10 @@ export default function LoginModal({
   ) {
     if (
       event.target ===
-      event.currentTarget
+        event.currentTarget &&
+      !isLoading
     ) {
-      onClose();
+      handleClose();
     }
   }
 
@@ -112,7 +166,7 @@ export default function LoginModal({
       <section className="relative max-h-full w-full max-w-md overflow-y-auto rounded-2xl border border-border bg-surface p-6 shadow-2xl sm:p-8">
         <button
           type="button"
-          onClick={onClose}
+          onClick={handleClose}
           disabled={isLoading}
           aria-label="Cerrar inicio de sesión"
           className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full text-text-muted transition hover:bg-background hover:text-text disabled:cursor-not-allowed disabled:opacity-50"
@@ -216,7 +270,7 @@ export default function LoginModal({
             <div className="mt-2 flex justify-end">
               <Link
                 to="/forgot-password"
-                onClick={onClose}
+                onClick={handleClose}
                 className="text-sm font-medium text-primary hover:underline"
               >
                 ¿Olvidaste tu contraseña?
@@ -240,7 +294,7 @@ export default function LoginModal({
 
           <Link
             to="/register"
-            onClick={onClose}
+            onClick={handleClose}
             className="font-semibold text-primary hover:underline"
           >
             Regístrate

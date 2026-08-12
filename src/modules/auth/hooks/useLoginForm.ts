@@ -1,4 +1,5 @@
 import {
+  useCallback,
   useState,
   type ChangeEvent,
   type FormEvent,
@@ -139,6 +140,22 @@ export function useLoginForm(
     setShowPassword,
   ] = useState(false);
 
+  /**
+   * Limpia completamente el formulario
+   * de inicio de sesión.
+   */
+  const resetForm = useCallback(
+    (): void => {
+      setForm({
+        email: "",
+        password: "",
+      });
+
+      setShowPassword(false);
+    },
+    [],
+  );
+
   const handleChange = (
     event: ChangeEvent<HTMLInputElement>,
   ): void => {
@@ -190,11 +207,11 @@ export function useLoginForm(
           password,
         );
 
-      /*
-      |--------------------------------------------------------------------------
-      | El usuario necesita verificar el código 2FA
-      |--------------------------------------------------------------------------
-      */
+      /**
+       * --------------------------------------------------------------------------
+       * El usuario necesita verificar el código 2FA
+       * --------------------------------------------------------------------------
+       */
 
       if (response.requires_2fa) {
         const pendingChallenge:
@@ -239,7 +256,13 @@ export function useLoginForm(
             "Enviamos un código de verificación a tu correo.",
         );
 
-        /*
+        /**
+         * El correo y la contraseña ya no son
+         * necesarios en el formulario.
+         */
+        resetForm();
+
+        /**
          * Cierra el modal antes de abrir
          * la pantalla de verificación.
          */
@@ -255,11 +278,11 @@ export function useLoginForm(
         return;
       }
 
-      /*
-      |--------------------------------------------------------------------------
-      | Login completado sin 2FA
-      |--------------------------------------------------------------------------
-      */
+      /**
+       * --------------------------------------------------------------------------
+       * Login completado sin 2FA
+       * --------------------------------------------------------------------------
+       */
 
       const {
         token,
@@ -314,6 +337,12 @@ export function useLoginForm(
         response.message ||
           "Sesión iniciada correctamente.",
       );
+
+      /**
+       * Limpia correo, contraseña y visibilidad
+       * antes de cerrar el modal.
+       */
+      resetForm();
 
       options?.onSuccess?.();
 
@@ -370,5 +399,7 @@ export function useLoginForm(
 
     showPassword,
     setShowPassword,
+
+    resetForm,
   };
 }
