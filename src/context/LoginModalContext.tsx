@@ -88,6 +88,7 @@ export function LoginModalProvider({
       <LoginModal
         isOpen={isOpen}
         onClose={closeLoginModal}
+        redirectTo={redirectTo}
       />
     </LoginModalContext.Provider>
   );

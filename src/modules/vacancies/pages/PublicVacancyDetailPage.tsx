@@ -13,9 +13,9 @@ import type {
 import {
   Link,
   useLocation,
+  useNavigate,
   useParams,
 } from "react-router-dom";
-import { useLoginModal } from "../../../context/LoginModalContext";
 
 import {
   ArrowLeftIcon,
@@ -23,6 +23,7 @@ import {
   BriefcaseIcon,
   BuildingOffice2Icon,
   CalendarDaysIcon,
+  ChatBubbleLeftRightIcon,
   CheckCircleIcon,
   ExclamationTriangleIcon,
   MapPinIcon,
@@ -30,7 +31,13 @@ import {
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
 
-import { useAuth } from "../../../context/useAuth";
+import {
+  useLoginModal,
+} from "../../../context/LoginModalContext";
+
+import {
+  useAuth,
+} from "../../../context/useAuth";
 
 import {
   createApplication,
@@ -147,13 +154,18 @@ export default function PublicVacancyDetailPage() {
     vacancyId: string;
   }>();
 
-
   const location =
     useLocation();
 
-  const { openLoginModal } = useLoginModal();
+  const navigate =
+    useNavigate();
 
   const {
+    openLoginModal,
+  } = useLoginModal();
+
+  const {
+    user,
     isAuthenticated,
     isFreelancer,
     primaryRole,
@@ -235,11 +247,13 @@ export default function PublicVacancyDetailPage() {
           );
 
           setLoading(false);
+
           return;
         }
 
         try {
           setLoading(true);
+
           setError("");
 
           const vacancyData =
@@ -265,12 +279,16 @@ export default function PublicVacancyDetailPage() {
           setLoading(false);
         }
       },
-      [numericVacancyId],
+      [
+        numericVacancyId,
+      ],
     );
 
   useEffect(() => {
     void loadVacancy();
-  }, [loadVacancy]);
+  }, [
+    loadVacancy,
+  ]);
 
   /*
   |--------------------------------------------------------------------------
@@ -288,6 +306,7 @@ export default function PublicVacancyDetailPage() {
         )
       ) {
         setHasApplied(false);
+
         return;
       }
 
@@ -331,16 +350,19 @@ export default function PublicVacancyDetailPage() {
 
   /*
   |--------------------------------------------------------------------------
-  | Acción principal
+  | Acción de postulación
   |--------------------------------------------------------------------------
   */
 
   function handleApplicationClick() {
     setApplicationError("");
+
     setApplicationSuccess("");
 
     if (!isAuthenticated) {
-      openLoginModal(location.pathname);
+      openLoginModal(
+        location.pathname,
+      );
 
       return;
     }
@@ -397,7 +419,9 @@ export default function PublicVacancyDetailPage() {
 
     try {
       setSubmitting(true);
+
       setApplicationError("");
+
       setApplicationSuccess("");
 
       const normalizedMessage =
@@ -413,7 +437,9 @@ export default function PublicVacancyDetailPage() {
       });
 
       setHasApplied(true);
+
       setMessage("");
+
       setShowApplicationForm(
         false,
       );
@@ -455,7 +481,7 @@ export default function PublicVacancyDetailPage() {
 
   /*
   |--------------------------------------------------------------------------
-  | Estados de carga y error
+  | Estados de carga
   |--------------------------------------------------------------------------
   */
 
@@ -471,18 +497,27 @@ export default function PublicVacancyDetailPage() {
 
               <div className="flex-1">
                 <div className="h-7 w-2/3 rounded bg-border" />
+
                 <div className="mt-4 h-4 w-40 rounded bg-border" />
               </div>
             </div>
 
             <div className="mt-8 h-4 w-full rounded bg-border" />
+
             <div className="mt-3 h-4 w-5/6 rounded bg-border" />
+
             <div className="mt-3 h-4 w-3/4 rounded bg-border" />
           </div>
         </div>
       </main>
     );
   }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Error
+  |--------------------------------------------------------------------------
+  */
 
   if (
     error ||
@@ -495,7 +530,8 @@ export default function PublicVacancyDetailPage() {
             <ExclamationTriangleIcon className="mx-auto h-14 w-14 text-danger" />
 
             <h1 className="mt-5 text-2xl font-bold text-text">
-              No pudimos mostrar la vacante
+              No pudimos mostrar la
+              vacante
             </h1>
 
             <p className="mt-3 text-sm text-text-muted">
@@ -508,6 +544,7 @@ export default function PublicVacancyDetailPage() {
               className="mt-6 inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90"
             >
               <ArrowLeftIcon className="h-5 w-5" />
+
               Volver a vacantes
             </Link>
           </section>
@@ -515,6 +552,12 @@ export default function PublicVacancyDetailPage() {
       </main>
     );
   }
+
+  /*
+  |--------------------------------------------------------------------------
+  | Datos de empresa
+  |--------------------------------------------------------------------------
+  */
 
   const companyName =
     vacancy.company_profile
@@ -535,6 +578,62 @@ export default function PublicVacancyDetailPage() {
       ?.industry ||
     "Sector no especificado";
 
+  /*
+   * El perfil empresarial ya contiene
+   * el ID del usuario propietario.
+   */
+  const companyUserId =
+    vacancy.company_profile
+      ?.user_id ?? null;
+
+  /*
+   * Impide que la empresa pueda
+   * enviarse mensajes a sí misma.
+   */
+  const isOwnCompany =
+    companyUserId !== null &&
+    user?.id === companyUserId;
+
+  /*
+  |--------------------------------------------------------------------------
+  | Contactar empresa
+  |--------------------------------------------------------------------------
+  */
+
+  function handleContactCompany(): void {
+    if (!companyUserId) {
+      return;
+    }
+
+    const messagesPath =
+      `/dashboard/mensajes?user=${companyUserId}`;
+
+    /*
+     * Si el visitante todavía no inició
+     * sesión, mostramos el login y
+     * conservamos la ruta al chat.
+     */
+    if (!isAuthenticated) {
+      openLoginModal(
+        messagesPath,
+      );
+
+      return;
+    }
+
+    /*
+     * No se permite iniciar conversación
+     * con la propia cuenta.
+     */
+    if (isOwnCompany) {
+      return;
+    }
+
+    navigate(
+      messagesPath,
+    );
+  }
+
   const isApplicationDisabled =
     checkingApplication ||
     submitting ||
@@ -544,23 +643,33 @@ export default function PublicVacancyDetailPage() {
   return (
     <main className="min-h-screen bg-background py-8 sm:py-12 lg:py-14">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        {/* Regresar */}
         <Link
           to="/vacantes"
           className="inline-flex items-center gap-2 text-sm font-semibold text-text-muted transition hover:text-primary"
         >
           <ArrowLeftIcon className="h-5 w-5" />
+
           Volver a vacantes
         </Link>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
-          {/* Información principal */}
+          {/* ================================================= */}
+          {/* INFORMACIÓN PRINCIPAL */}
+          {/* ================================================= */}
+
           <section className="rounded-3xl border border-border bg-surface p-5 shadow-card sm:p-7 lg:p-8">
+            {/* Encabezado */}
             <header className="flex flex-col gap-5 border-b border-border pb-7 sm:flex-row sm:items-start">
               <img
-                src={companyImage}
+                src={
+                  companyImage
+                }
                 alt={`Empresa ${companyName}`}
                 className="h-20 w-20 shrink-0 rounded-2xl border border-border bg-background object-cover"
-                onError={(event) => {
+                onError={(
+                  event,
+                ) => {
                   event.currentTarget.onerror =
                     null;
 
@@ -573,14 +682,18 @@ export default function PublicVacancyDetailPage() {
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <h1 className="text-2xl font-bold text-text sm:text-3xl">
-                      {vacancy.title}
+                      {
+                        vacancy.title
+                      }
                     </h1>
 
                     <div className="mt-3 flex items-center gap-2 text-sm text-text-muted">
                       <BuildingOffice2Icon className="h-5 w-5 shrink-0" />
 
                       <span>
-                        {companyName}
+                        {
+                          companyName
+                        }
                       </span>
                     </div>
                   </div>
@@ -592,7 +705,9 @@ export default function PublicVacancyDetailPage() {
               </div>
             </header>
 
+            {/* Información */}
             <div className="grid gap-4 border-b border-border py-7 sm:grid-cols-2">
+              {/* Categoría */}
               <div className="flex items-start gap-3 rounded-2xl bg-background p-4">
                 <BriefcaseIcon className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
 
@@ -602,11 +717,14 @@ export default function PublicVacancyDetailPage() {
                   </p>
 
                   <p className="mt-1 font-semibold text-text">
-                    {vacancy.category}
+                    {
+                      vacancy.category
+                    }
                   </p>
                 </div>
               </div>
 
+              {/* Ubicación */}
               <div className="flex items-start gap-3 rounded-2xl bg-background p-4">
                 <MapPinIcon className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
 
@@ -616,11 +734,14 @@ export default function PublicVacancyDetailPage() {
                   </p>
 
                   <p className="mt-1 font-semibold text-text">
-                    {vacancy.location}
+                    {
+                      vacancy.location
+                    }
                   </p>
                 </div>
               </div>
 
+              {/* Salario */}
               <div className="flex items-start gap-3 rounded-2xl bg-background p-4">
                 <BanknotesIcon className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
 
@@ -637,6 +758,7 @@ export default function PublicVacancyDetailPage() {
                 </div>
               </div>
 
+              {/* Fecha */}
               <div className="flex items-start gap-3 rounded-2xl bg-background p-4">
                 <CalendarDaysIcon className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
 
@@ -654,48 +776,66 @@ export default function PublicVacancyDetailPage() {
               </div>
             </div>
 
+            {/* Descripción */}
             <section className="py-7">
               <h2 className="text-xl font-semibold text-text">
-                Descripción de la vacante
+                Descripción de la
+                vacante
               </h2>
 
               <p className="mt-4 whitespace-pre-line text-sm leading-7 text-text-muted sm:text-base">
-                {vacancy.description}
+                {
+                  vacancy.description
+                }
               </p>
             </section>
           </section>
 
-          {/* Panel lateral */}
+          {/* ================================================= */}
+          {/* PANEL LATERAL */}
+          {/* ================================================= */}
+
           <aside className="space-y-5">
+            {/* Postulación */}
             <section className="rounded-3xl border border-border bg-surface p-5 shadow-card sm:p-6">
               <h2 className="text-lg font-semibold text-text">
                 Postularme
               </h2>
 
               <p className="mt-2 text-sm leading-6 text-text-muted">
-                Envía tu postulación y permite que la empresa revise tu perfil profesional.
+                Envía tu postulación
+                y permite que la
+                empresa revise tu
+                perfil profesional.
               </p>
 
+              {/* Éxito */}
               {applicationSuccess && (
                 <div className="mt-5 flex items-start gap-3 rounded-xl border border-success/20 bg-success/10 p-4 text-sm text-success">
                   <CheckCircleIcon className="h-5 w-5 shrink-0" />
 
                   <span>
-                    {applicationSuccess}
+                    {
+                      applicationSuccess
+                    }
                   </span>
                 </div>
               )}
 
+              {/* Error */}
               {applicationError && (
                 <div className="mt-5 flex items-start gap-3 rounded-xl border border-danger/20 bg-danger/5 p-4 text-sm text-danger">
                   <ExclamationTriangleIcon className="h-5 w-5 shrink-0" />
 
                   <span>
-                    {applicationError}
+                    {
+                      applicationError
+                    }
                   </span>
                 </div>
               )}
 
+              {/* Ya se postuló */}
               {hasApplied ? (
                 <div className="mt-5 rounded-xl border border-success/20 bg-success/10 p-4 text-center">
                   <CheckCircleIcon className="mx-auto h-8 w-8 text-success" />
@@ -708,10 +848,14 @@ export default function PublicVacancyDetailPage() {
                     to="/dashboard/postulaciones"
                     className="mt-3 inline-flex text-sm font-semibold text-primary hover:underline"
                   >
-                    Ver mis postulaciones
+                    Ver mis
+                    postulaciones
                   </Link>
                 </div>
               ) : showApplicationForm ? (
+                /*
+                 * Formulario de postulación.
+                 */
                 <form
                   onSubmit={
                     handleSubmitApplication
@@ -722,31 +866,46 @@ export default function PublicVacancyDetailPage() {
                     htmlFor="application-message"
                     className="text-sm font-semibold text-text"
                   >
-                    Mensaje para la empresa
+                    Mensaje para la
+                    empresa
                   </label>
 
                   <textarea
                     id="application-message"
-                    value={message}
-                    onChange={(event) => {
+                    value={
+                      message
+                    }
+                    onChange={(
+                      event,
+                    ) => {
                       setMessage(
-                        event.target.value,
+                        event.target
+                          .value,
                       );
                     }}
-                    maxLength={1000}
-                    rows={6}
+                    maxLength={
+                      1000
+                    }
+                    rows={
+                      6
+                    }
                     placeholder="Describe brevemente por qué eres una buena opción para esta vacante..."
                     className="mt-2 w-full resize-none rounded-xl border border-border bg-background px-4 py-3 text-sm text-text outline-none transition placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/15"
                   />
 
                   <div className="mt-2 text-right text-xs text-text-muted">
-                    {message.length}/1000
+                    {
+                      message.length
+                    }
+                    /1000
                   </div>
 
                   <div className="mt-4 flex flex-col gap-3">
                     <button
                       type="submit"
-                      disabled={submitting}
+                      disabled={
+                        submitting
+                      }
                       className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <PaperAirplaneIcon className="h-5 w-5" />
@@ -767,7 +926,9 @@ export default function PublicVacancyDetailPage() {
                           "",
                         );
                       }}
-                      disabled={submitting}
+                      disabled={
+                        submitting
+                      }
                       className="w-full rounded-xl border border-border px-5 py-3 text-sm font-semibold text-text-muted transition hover:border-primary hover:text-primary disabled:opacity-50"
                     >
                       Cancelar
@@ -775,6 +936,10 @@ export default function PublicVacancyDetailPage() {
                   </div>
                 </form>
               ) : (
+                /*
+                 * Botón para iniciar
+                 * la postulación.
+                 */
                 <button
                   type="button"
                   onClick={
@@ -799,28 +964,88 @@ export default function PublicVacancyDetailPage() {
                 !isFreelancer &&
                 !applicationError && (
                   <p className="mt-4 text-center text-xs text-text-muted">
-                    La postulación está disponible únicamente para cuentas freelancer.
+                    La postulación está
+                    disponible
+                    únicamente para
+                    cuentas freelancer.
                   </p>
                 )}
 
               {!isAuthenticated && (
                 <p className="mt-4 text-center text-xs text-text-muted">
-                  Debes iniciar sesión como freelancer para postularte.
+                  Debes iniciar sesión
+                  como freelancer para
+                  postularte.
                 </p>
               )}
             </section>
 
+            {/* ================================================= */}
+            {/* CONTACTAR EMPRESA */}
+            {/* ================================================= */}
+
+            {companyUserId !== null &&
+              !isOwnCompany && (
+                <section className="rounded-3xl border border-border bg-surface p-5 shadow-card sm:p-6">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                      <ChatBubbleLeftRightIcon className="h-6 w-6" />
+                    </div>
+
+                    <div>
+                      <h2 className="font-semibold text-text">
+                        Contactar
+                        empresa
+                      </h2>
+
+                      <p className="mt-1 text-xs text-text-muted">
+                        Mensaje directo
+                      </p>
+                    </div>
+                  </div>
+
+                  <p className="mt-4 text-sm leading-6 text-text-muted">
+                    Comunícate
+                    directamente con la
+                    empresa para
+                    resolver dudas sobre
+                    esta vacante.
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={
+                      handleContactCompany
+                    }
+                    className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-primary bg-primary/10 px-5 py-3 text-sm font-semibold text-primary transition hover:bg-primary hover:text-white"
+                  >
+                    <ChatBubbleLeftRightIcon className="h-5 w-5" />
+
+                    Enviar mensaje
+                  </button>
+                </section>
+              )}
+
+            {/* ================================================= */}
+            {/* ACERCA DE LA EMPRESA */}
+            {/* ================================================= */}
+
             <section className="rounded-3xl border border-border bg-surface p-5 shadow-card sm:p-6">
               <h2 className="font-semibold text-text">
-                Acerca de la empresa
+                Acerca de la
+                empresa
               </h2>
 
               <div className="mt-4 flex items-center gap-3">
                 <img
-                  src={companyImage}
+                  src={
+                    companyImage
+                  }
                   alt={`Empresa ${companyName}`}
                   className="h-12 w-12 rounded-xl border border-border object-cover"
-                  onError={(event) => {
+                  onError={(
+                    event,
+                  ) => {
                     event.currentTarget.onerror =
                       null;
 
@@ -831,11 +1056,15 @@ export default function PublicVacancyDetailPage() {
 
                 <div className="min-w-0">
                   <p className="truncate font-semibold text-text">
-                    {companyName}
+                    {
+                      companyName
+                    }
                   </p>
 
                   <p className="mt-1 truncate text-sm text-text-muted">
-                    {companyIndustry}
+                    {
+                      companyIndustry
+                    }
                   </p>
                 </div>
               </div>
@@ -854,11 +1083,13 @@ export default function PublicVacancyDetailPage() {
                 <UserCircleIcon className="h-5 w-5 shrink-0" />
 
                 <span>
-                  Empresa verificada en WorkLink
+                  Empresa verificada
+                  en WorkLink
                 </span>
               </div>
             </section>
 
+            {/* Mis postulaciones */}
             {primaryRole ===
               "freelancer" && (
               <Link

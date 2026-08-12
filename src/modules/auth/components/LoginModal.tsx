@@ -5,7 +5,10 @@ import {
 } from "react";
 
 import { createPortal } from "react-dom";
-import { Link } from "react-router-dom";
+
+import {
+  Link,
+} from "react-router-dom";
 
 import {
   EyeIcon,
@@ -13,54 +16,85 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 
-import { useAuth } from "../../../context/useAuth";
-import { useLoginForm } from "../hooks/useLoginForm";
+import {
+  useAuth,
+} from "../../../context/useAuth";
+
+import {
+  useLoginForm,
+} from "../hooks/useLoginForm";
 
 interface LoginModalProps {
   isOpen: boolean;
+
   onClose: () => void;
+
+  /*
+   * Ruta a la que debe ir el usuario
+   * después de iniciar sesión.
+   *
+   * Ejemplo:
+   * /dashboard/mensajes?user=15
+   */
+  redirectTo?: string | null;
 }
 
 export default function LoginModal({
   isOpen,
   onClose,
+  redirectTo = null,
 }: LoginModalProps) {
-  const { isAuthenticated } = useAuth();
+  const {
+    isAuthenticated,
+  } = useAuth();
 
   const {
     form,
     handleChange,
     handleSubmit,
+
     isLoading,
+
     showPassword,
     setShowPassword,
+
     resetForm,
   } = useLoginForm({
-    redirectTo: undefined,
+    /*
+     * Ahora el modal sí conserva
+     * el destino solicitado.
+     */
+    redirectTo,
+
     onSuccess: onClose,
   });
 
-  /**
-   * Cierra el modal y limpia todos
-   * los datos del formulario.
-   */
-  const handleClose = useCallback(() => {
-    if (isLoading) {
-      return;
-    }
+  /*
+  |--------------------------------------------------------------------------
+  | Cerrar modal
+  |--------------------------------------------------------------------------
+  */
 
-    resetForm();
-    onClose();
-  }, [
-    isLoading,
-    onClose,
-    resetForm,
-  ]);
+  const handleClose =
+    useCallback(() => {
+      if (isLoading) {
+        return;
+      }
 
-  /**
-   * Cada vez que el modal se abre,
-   * comienza con el formulario vacío.
-   */
+      resetForm();
+      onClose();
+    }, [
+      isLoading,
+      onClose,
+      resetForm,
+    ]);
+
+  /*
+  |--------------------------------------------------------------------------
+  | Limpiar formulario al abrir
+  |--------------------------------------------------------------------------
+  */
+
   useEffect(() => {
     if (!isOpen) {
       return;
@@ -72,11 +106,12 @@ export default function LoginModal({
     resetForm,
   ]);
 
-  /**
-   * Bloquea el scroll del body mientras
-   * el modal está abierto y permite
-   * cerrarlo con Escape.
-   */
+  /*
+  |--------------------------------------------------------------------------
+  | Escape y bloqueo del scroll
+  |--------------------------------------------------------------------------
+  */
+
   useEffect(() => {
     if (!isOpen) {
       return;
@@ -119,11 +154,12 @@ export default function LoginModal({
     isOpen,
   ]);
 
-  /**
-   * Si por alguna razón el modal continúa
-   * abierto después de autenticarse,
-   * se cierra automáticamente.
-   */
+  /*
+  |--------------------------------------------------------------------------
+  | Cerrar automáticamente al autenticarse
+  |--------------------------------------------------------------------------
+  */
+
   useEffect(() => {
     if (
       isOpen &&
@@ -143,6 +179,12 @@ export default function LoginModal({
     return null;
   }
 
+  /*
+  |--------------------------------------------------------------------------
+  | Cerrar al presionar el fondo
+  |--------------------------------------------------------------------------
+  */
+
   function handleBackdropClick(
     event: MouseEvent<HTMLDivElement>,
   ) {
@@ -160,20 +202,28 @@ export default function LoginModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="login-modal-title"
-      onMouseDown={handleBackdropClick}
+      onMouseDown={
+        handleBackdropClick
+      }
       className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/50 px-4 py-8 backdrop-blur-sm"
     >
       <section className="relative max-h-full w-full max-w-md overflow-y-auto rounded-2xl border border-border bg-surface p-6 shadow-2xl sm:p-8">
+        {/* Cerrar */}
         <button
           type="button"
-          onClick={handleClose}
-          disabled={isLoading}
+          onClick={
+            handleClose
+          }
+          disabled={
+            isLoading
+          }
           aria-label="Cerrar inicio de sesión"
           className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full text-text-muted transition hover:bg-background hover:text-text disabled:cursor-not-allowed disabled:opacity-50"
         >
           <XMarkIcon className="h-6 w-6" />
         </button>
 
+        {/* Encabezado */}
         <div className="pr-10">
           <img
             src="/logo.png"
@@ -189,15 +239,20 @@ export default function LoginModal({
           </h2>
 
           <p className="mt-2 text-sm leading-6 text-text-muted">
-            Ingresa a tu cuenta para conectar,
-            contratar y postularte en WorkLink.
+            Ingresa a tu cuenta para
+            conectar, contratar y
+            postularte en WorkLink.
           </p>
         </div>
 
+        {/* Formulario */}
         <form
           className="mt-7 space-y-5"
-          onSubmit={handleSubmit}
+          onSubmit={
+            handleSubmit
+          }
         >
+          {/* Correo */}
           <div>
             <label
               htmlFor="modal-email"
@@ -210,8 +265,12 @@ export default function LoginModal({
               id="modal-email"
               type="email"
               name="email"
-              value={form.email}
-              onChange={handleChange}
+              value={
+                form.email
+              }
+              onChange={
+                handleChange
+              }
               placeholder="correo@ejemplo.com"
               autoComplete="email"
               required
@@ -220,6 +279,7 @@ export default function LoginModal({
             />
           </div>
 
+          {/* Contraseña */}
           <div>
             <label
               htmlFor="modal-password"
@@ -237,8 +297,12 @@ export default function LoginModal({
                     : "password"
                 }
                 name="password"
-                value={form.password}
-                onChange={handleChange}
+                value={
+                  form.password
+                }
+                onChange={
+                  handleChange
+                }
                 placeholder="••••••••"
                 autoComplete="current-password"
                 required
@@ -267,20 +331,27 @@ export default function LoginModal({
               </button>
             </div>
 
+            {/* Recuperar contraseña */}
             <div className="mt-2 flex justify-end">
               <Link
                 to="/forgot-password"
-                onClick={handleClose}
+                onClick={
+                  handleClose
+                }
                 className="text-sm font-medium text-primary hover:underline"
               >
-                ¿Olvidaste tu contraseña?
+                ¿Olvidaste tu
+                contraseña?
               </Link>
             </div>
           </div>
 
+          {/* Iniciar sesión */}
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={
+              isLoading
+            }
             className="inline-flex w-full items-center justify-center rounded-xl bg-primary px-5 py-3 font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isLoading
@@ -289,12 +360,15 @@ export default function LoginModal({
           </button>
         </form>
 
+        {/* Registro */}
         <p className="mt-6 text-center text-sm text-text-muted">
           ¿No tienes una cuenta?{" "}
 
           <Link
             to="/register"
-            onClick={handleClose}
+            onClick={
+              handleClose
+            }
             className="font-semibold text-primary hover:underline"
           >
             Regístrate

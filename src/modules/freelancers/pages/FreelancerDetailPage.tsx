@@ -4,6 +4,7 @@ import {
     ArrowTopRightOnSquareIcon,
     BriefcaseIcon,
     CalendarDaysIcon,
+    ChatBubbleLeftRightIcon,
     CheckCircleIcon,
     ExclamationTriangleIcon,
     FolderOpenIcon,
@@ -29,6 +30,9 @@ import {
     useParams,
 } from "react-router-dom";
 
+import { useAuth } from "../../../context/useAuth";
+import { useLoginModal } from "../../../context/LoginModalContext";
+
 import PublicBriefcaseCard from "../components/PublicBriefcaseCard";
 import PublicBriefcaseDetail from "../components/PublicBriefcaseDetail";
 import PublicServiceCard from "../components/PublicServiceCard";
@@ -36,7 +40,10 @@ import PublicServiceCard from "../components/PublicServiceCard";
 import useFreelancerDetail from "../hooks/useFreelancerDetail";
 
 import ReviewStars from "../../reviews/components/ReviewStars";
-import { getPublicReviewsByFreelancer } from "../../reviews/services/reviewService";
+
+import {
+    getPublicReviewsByFreelancer,
+} from "../../reviews/services/reviewService";
 
 import type {
     Review,
@@ -66,11 +73,16 @@ const workModeLabels: Record<
 function normalizeUrl(
     value: string,
 ): string {
-    const normalizedValue = value.trim();
+    const normalizedValue =
+        value.trim();
 
     if (
-        normalizedValue.startsWith("http://") ||
-        normalizedValue.startsWith("https://")
+        normalizedValue.startsWith(
+            "http://",
+        ) ||
+        normalizedValue.startsWith(
+            "https://",
+        )
     ) {
         return normalizedValue;
     }
@@ -87,7 +99,11 @@ function formatDate(
 
     const date = new Date(value);
 
-    if (Number.isNaN(date.getTime())) {
+    if (
+        Number.isNaN(
+            date.getTime(),
+        )
+    ) {
         return "Fecha no disponible";
     }
 
@@ -139,14 +155,41 @@ function getProfessionalLinks(
         (
             item,
         ): item is ProfessionalLinkItem =>
-            typeof item.url === "string" &&
-            item.url.trim().length > 0,
+            typeof item.url ===
+                "string" &&
+            item.url.trim().length >
+                0,
     );
 }
 
 export default function FreelancerDetailPage() {
-    const navigate = useNavigate();
-    const { profileId } = useParams();
+    const navigate =
+        useNavigate();
+
+    const {
+        profileId,
+    } = useParams();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Sesión y autenticación
+    |--------------------------------------------------------------------------
+    */
+
+    const {
+        user,
+        isAuthenticated,
+    } = useAuth();
+
+    const {
+        openLoginModal,
+    } = useLoginModal();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Reseñas públicas
+    |--------------------------------------------------------------------------
+    */
 
     const [
         publicReviews,
@@ -156,9 +199,10 @@ export default function FreelancerDetailPage() {
     const [
         reviewsPagination,
         setReviewsPagination,
-    ] = useState<ReviewPagination | null>(
-        null,
-    );
+    ] =
+        useState<ReviewPagination | null>(
+            null,
+        );
 
     const [
         averageRating,
@@ -189,6 +233,12 @@ export default function FreelancerDetailPage() {
         null,
     );
 
+    /*
+    |--------------------------------------------------------------------------
+    | Freelancer
+    |--------------------------------------------------------------------------
+    */
+
     const {
         freelancer,
         services,
@@ -203,15 +253,15 @@ export default function FreelancerDetailPage() {
         isAvailable,
 
         languages:
-        displayedLanguages,
+            displayedLanguages,
 
         links:
-        professionalLinks,
+            professionalLinks,
 
         isLoading,
 
         notFound:
-        isNotFound,
+            isNotFound,
 
         error,
 
@@ -223,8 +273,14 @@ export default function FreelancerDetailPage() {
         closeBriefcaseDetail,
 
         reload:
-        reloadFreelancerDetail,
+            reloadFreelancerDetail,
     } = useFreelancerDetail();
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cargar reseñas
+    |--------------------------------------------------------------------------
+    */
 
     useEffect(() => {
         const parsedProfileId =
@@ -244,8 +300,13 @@ export default function FreelancerDetailPage() {
         const loadReviews =
             async (): Promise<void> => {
                 try {
-                    setIsReviewsLoading(true);
-                    setReviewsError(null);
+                    setIsReviewsLoading(
+                        true,
+                    );
+
+                    setReviewsError(
+                        null,
+                    );
 
                     const response =
                         await getPublicReviewsByFreelancer(
@@ -259,29 +320,39 @@ export default function FreelancerDetailPage() {
                     }
 
                     setPublicReviews(
-                        response.data.reviews,
+                        response.data
+                            .reviews,
                     );
 
                     setReviewsPagination(
-                        response.data.pagination,
+                        response.data
+                            .pagination,
                     );
 
                     setAverageRating(
-                        response.data.average_rating,
+                        response.data
+                            .average_rating,
                     );
 
                     setReviewsCount(
-                        response.data.reviews_count,
+                        response.data
+                            .reviews_count,
                     );
                 } catch {
-                    if (isMounted) {
+                    if (
+                        isMounted
+                    ) {
                         setReviewsError(
                             "No se pudieron cargar las reseñas del freelancer.",
                         );
                     }
                 } finally {
-                    if (isMounted) {
-                        setIsReviewsLoading(false);
+                    if (
+                        isMounted
+                    ) {
+                        setIsReviewsLoading(
+                            false,
+                        );
                     }
                 }
             };
@@ -326,37 +397,51 @@ export default function FreelancerDetailPage() {
                         <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
                             {Array.from({
                                 length: 4,
-                            }).map((_, index) => (
-                                <article
-                                    key={index}
-                                    className="h-28 animate-pulse rounded-2xl border border-border bg-surface p-5 shadow-card"
-                                >
-                                    <div className="h-5 w-24 rounded bg-border" />
+                            }).map(
+                                (
+                                    _,
+                                    index,
+                                ) => (
+                                    <article
+                                        key={
+                                            index
+                                        }
+                                        className="h-28 animate-pulse rounded-2xl border border-border bg-surface p-5 shadow-card"
+                                    >
+                                        <div className="h-5 w-24 rounded bg-border" />
 
-                                    <div className="mt-4 h-6 w-36 rounded bg-border" />
-                                </article>
-                            ))}
+                                        <div className="mt-4 h-6 w-36 rounded bg-border" />
+                                    </article>
+                                ),
+                            )}
                         </section>
 
                         <section className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                             {Array.from({
                                 length: 3,
-                            }).map((_, index) => (
-                                <article
-                                    key={index}
-                                    className="h-[460px] animate-pulse rounded-2xl border border-border bg-surface p-6 shadow-card"
-                                >
-                                    <div className="h-12 w-12 rounded-xl bg-border" />
+                            }).map(
+                                (
+                                    _,
+                                    index,
+                                ) => (
+                                    <article
+                                        key={
+                                            index
+                                        }
+                                        className="h-[460px] animate-pulse rounded-2xl border border-border bg-surface p-6 shadow-card"
+                                    >
+                                        <div className="h-12 w-12 rounded-xl bg-border" />
 
-                                    <div className="mt-5 h-6 w-3/4 rounded bg-border" />
+                                        <div className="mt-5 h-6 w-3/4 rounded bg-border" />
 
-                                    <div className="mt-5 h-20 rounded-xl bg-border" />
+                                        <div className="mt-5 h-20 rounded-xl bg-border" />
 
-                                    <div className="mt-5 h-32 rounded-xl bg-border" />
+                                        <div className="mt-5 h-32 rounded-xl bg-border" />
 
-                                    <div className="mt-6 h-12 rounded-xl bg-border" />
-                                </article>
-                            ))}
+                                        <div className="mt-6 h-12 rounded-xl bg-border" />
+                                    </article>
+                                ),
+                            )}
                         </section>
                     </div>
                 </div>
@@ -434,7 +519,8 @@ export default function FreelancerDetailPage() {
                     </div>
 
                     <h1 className="mt-5 text-2xl font-bold text-text">
-                        No se pudo cargar el perfil
+                        No se pudo cargar
+                        el perfil
                     </h1>
 
                     <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-text-muted">
@@ -457,6 +543,12 @@ export default function FreelancerDetailPage() {
         );
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Información calculada
+    |--------------------------------------------------------------------------
+    */
+
     const professionalLinkItems =
         getProfessionalLinks(
             professionalLinks,
@@ -465,9 +557,51 @@ export default function FreelancerDetailPage() {
     const formattedWorkMode =
         freelancer.workMode
             ? workModeLabels[
-            freelancer.workMode
-            ]
+                  freelancer.workMode
+              ]
             : "Modalidad no especificada";
+
+    /*
+    |--------------------------------------------------------------------------
+    | Mensajería
+    |--------------------------------------------------------------------------
+    */
+
+    const isOwnProfile =
+        user?.id ===
+        freelancer.userId;
+
+    const handleSendMessage =
+        (): void => {
+            const messagesPath =
+                `/dashboard/mensajes?user=${freelancer.userId}`;
+
+            /*
+             * Si no hay sesión, abrimos el
+             * login indicando el destino.
+             */
+            if (
+                !isAuthenticated
+            ) {
+                openLoginModal(
+                    messagesPath,
+                );
+
+                return;
+            }
+
+            /*
+             * No permitimos iniciar un chat
+             * con la misma cuenta.
+             */
+            if (isOwnProfile) {
+                return;
+            }
+
+            navigate(
+                messagesPath,
+            );
+        };
 
     return (
         <>
@@ -476,7 +610,9 @@ export default function FreelancerDetailPage() {
                     {/* Regresar */}
                     <button
                         type="button"
-                        onClick={() => navigate(-1)}
+                        onClick={() =>
+                            navigate(-1)
+                        }
                         className="mb-6 inline-flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-medium text-text transition hover:border-primary/40 hover:text-primary"
                     >
                         <ArrowLeftIcon className="h-5 w-5" />
@@ -493,7 +629,9 @@ export default function FreelancerDetailPage() {
                             <div className="relative flex flex-col gap-6 sm:flex-row sm:items-end">
                                 {/* Fotografía */}
                                 <img
-                                    src={freelancer.image}
+                                    src={
+                                        freelancer.image
+                                    }
                                     alt={`Perfil de ${freelancer.name}`}
                                     className="h-32 w-32 shrink-0 rounded-2xl border-4 border-white/90 bg-background object-cover shadow-xl sm:h-40 sm:w-40"
                                 />
@@ -502,16 +640,21 @@ export default function FreelancerDetailPage() {
                                 <div className="min-w-0 flex-1 pb-1">
                                     <div className="flex flex-wrap items-center gap-3">
                                         <h1 className="break-words text-2xl font-bold leading-tight text-white sm:text-3xl lg:text-4xl">
-                                            {freelancer.name}
+                                            {
+                                                freelancer.name
+                                            }
                                         </h1>
 
                                         <span
                                             className={[
                                                 "inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold backdrop-blur-sm",
+
                                                 isAvailable
                                                     ? "border-white/20 bg-success/90 text-white"
                                                     : "border-white/20 bg-black/20 text-white/80",
-                                            ].join(" ")}
+                                            ].join(
+                                                " ",
+                                            )}
                                         >
                                             {isAvailable ? (
                                                 <CheckCircleIcon className="h-4 w-4" />
@@ -526,20 +669,28 @@ export default function FreelancerDetailPage() {
                                     </div>
 
                                     <p className="mt-2 text-lg font-semibold text-white/90">
-                                        {freelancer.profession}
+                                        {
+                                            freelancer.profession
+                                        }
                                     </p>
 
                                     <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-white/80">
                                         <span className="inline-flex items-center gap-1.5">
                                             <MapPinIcon className="h-4 w-4" />
 
-                                            {freelancer.location}
+                                            {
+                                                freelancer.location
+                                            }
                                         </span>
 
                                         <span className="inline-flex items-center gap-1.5">
                                             <StarIcon className="h-4 w-4 text-yellow-300" />
 
-                                            {freelancer.rating.toFixed(1)} de calificación
+                                            {freelancer.rating.toFixed(
+                                                1,
+                                            )}{" "}
+                                            de
+                                            calificación
                                         </span>
                                     </div>
                                 </div>
@@ -547,13 +698,13 @@ export default function FreelancerDetailPage() {
                         </div>
 
                         {/* Área blanca */}
-                        {/* Área blanca */}
                         <div className="px-5 py-7 sm:px-8 sm:py-8">
                             <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-start">
                                 {/* Descripción */}
                                 <div className="min-w-0">
                                     <h2 className="text-lg font-semibold text-text">
-                                        Acerca del freelancer
+                                        Acerca del
+                                        freelancer
                                     </h2>
 
                                     <p className="mt-3 max-w-4xl whitespace-pre-wrap text-sm leading-7 text-text-muted">
@@ -562,15 +713,37 @@ export default function FreelancerDetailPage() {
                                     </p>
                                 </div>
 
-                                {/* Tarifa */}
-                                <div className="w-full rounded-2xl border border-primary/20 bg-primary/5 px-5 py-4 lg:min-w-[280px] lg:w-auto lg:text-right">
-                                    <p className="text-xs font-medium uppercase tracking-wide text-text-muted">
-                                        Tarifa profesional
-                                    </p>
+                                {/* Tarifa y mensaje */}
+                                <div className="w-full space-y-3 lg:w-auto lg:min-w-[280px]">
+                                    {/* Tarifa */}
+                                    <div className="rounded-2xl border border-primary/20 bg-primary/5 px-5 py-4 lg:text-right">
+                                        <p className="text-xs font-medium uppercase tracking-wide text-text-muted">
+                                            Tarifa
+                                            profesional
+                                        </p>
 
-                                    <p className="mt-1 text-xl font-bold text-primary sm:text-2xl">
-                                        {freelancer.price}
-                                    </p>
+                                        <p className="mt-1 text-xl font-bold text-primary sm:text-2xl">
+                                            {
+                                                freelancer.price
+                                            }
+                                        </p>
+                                    </div>
+
+                                    {/* Enviar mensaje */}
+                                    {!isOwnProfile && (
+                                        <button
+                                            type="button"
+                                            onClick={
+                                                handleSendMessage
+                                            }
+                                            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 font-semibold text-white transition hover:opacity-90"
+                                        >
+                                            <ChatBubbleLeftRightIcon className="h-5 w-5" />
+
+                                            Enviar
+                                            mensaje
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -588,7 +761,9 @@ export default function FreelancerDetailPage() {
                             </p>
 
                             <p className="mt-1 font-semibold text-text">
-                                {formattedWorkMode}
+                                {
+                                    formattedWorkMode
+                                }
                             </p>
                         </article>
 
@@ -653,28 +828,39 @@ export default function FreelancerDetailPage() {
                                     </h2>
 
                                     <p className="mt-1 text-sm text-text-muted">
-                                        Idiomas indicados por el freelancer.
+                                        Idiomas
+                                        indicados
+                                        por el
+                                        freelancer.
                                     </p>
                                 </div>
                             </div>
 
                             {displayedLanguages.length >
-                                0 ? (
+                            0 ? (
                                 <div className="mt-5 flex flex-wrap gap-2">
                                     {displayedLanguages.map(
-                                        (language) => (
+                                        (
+                                            language,
+                                        ) => (
                                             <span
-                                                key={language}
+                                                key={
+                                                    language
+                                                }
                                                 className="rounded-full border border-primary/20 bg-primary/5 px-3 py-1.5 text-sm font-medium text-primary"
                                             >
-                                                {language}
+                                                {
+                                                    language
+                                                }
                                             </span>
                                         ),
                                     )}
                                 </div>
                             ) : (
                                 <p className="mt-5 text-sm text-text-muted">
-                                    No se especificaron idiomas.
+                                    No se
+                                    especificaron
+                                    idiomas.
                                 </p>
                             )}
                         </article>
@@ -687,20 +873,24 @@ export default function FreelancerDetailPage() {
 
                                 <div>
                                     <h2 className="font-semibold text-text">
-                                        Enlaces profesionales
+                                        Enlaces
+                                        profesionales
                                     </h2>
 
                                     <p className="mt-1 text-sm text-text-muted">
-                                        Sitios y redes profesionales.
+                                        Sitios y redes
+                                        profesionales.
                                     </p>
                                 </div>
                             </div>
 
                             {professionalLinkItems.length >
-                                0 ? (
+                            0 ? (
                                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
                                     {professionalLinkItems.map(
-                                        (link) => (
+                                        (
+                                            link,
+                                        ) => (
                                             <a
                                                 key={`${link.label}-${link.url}`}
                                                 href={normalizeUrl(
@@ -711,7 +901,9 @@ export default function FreelancerDetailPage() {
                                                 className="inline-flex items-center justify-between gap-3 rounded-xl border border-border bg-background px-4 py-3 text-sm font-medium text-text transition hover:border-primary/40 hover:text-primary"
                                             >
                                                 <span className="truncate">
-                                                    {link.label}
+                                                    {
+                                                        link.label
+                                                    }
                                                 </span>
 
                                                 <ArrowTopRightOnSquareIcon className="h-4 w-4 shrink-0" />
@@ -721,7 +913,10 @@ export default function FreelancerDetailPage() {
                                 </div>
                             ) : (
                                 <p className="mt-5 text-sm text-text-muted">
-                                    No se agregaron enlaces profesionales.
+                                    No se
+                                    agregaron
+                                    enlaces
+                                    profesionales.
                                 </p>
                             )}
                         </article>
@@ -732,23 +927,36 @@ export default function FreelancerDetailPage() {
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                             <div>
                                 <p className="text-sm font-medium text-primary">
-                                    Servicios profesionales
+                                    Servicios
+                                    profesionales
                                 </p>
 
                                 <h2 className="mt-1 text-2xl font-bold text-text">
-                                    Servicios publicados
+                                    Servicios
+                                    publicados
                                 </h2>
 
                                 <p className="mt-2 max-w-2xl text-sm leading-6 text-text-muted">
-                                    Consulta los servicios disponibles y envía una solicitud de contratación con los detalles de tu proyecto.
+                                    Consulta los
+                                    servicios
+                                    disponibles y
+                                    envía una
+                                    solicitud de
+                                    contratación
+                                    con los
+                                    detalles de tu
+                                    proyecto.
                                 </p>
                             </div>
 
                             <span className="inline-flex w-fit items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm font-medium text-text-muted">
                                 <BriefcaseIcon className="h-4 w-4" />
 
-                                {servicesCount}{" "}
-                                {servicesCount === 1
+                                {
+                                    servicesCount
+                                }{" "}
+                                {servicesCount ===
+                                1
                                     ? "servicio"
                                     : "servicios"}
                             </span>
@@ -757,10 +965,16 @@ export default function FreelancerDetailPage() {
                         {hasServices ? (
                             <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                                 {services.map(
-                                    (service) => (
+                                    (
+                                        service,
+                                    ) => (
                                         <PublicServiceCard
-                                            key={service.id}
-                                            service={service}
+                                            key={
+                                                service.id
+                                            }
+                                            service={
+                                                service
+                                            }
                                         />
                                     ),
                                 )}
@@ -772,11 +986,20 @@ export default function FreelancerDetailPage() {
                                 </div>
 
                                 <h3 className="mt-5 text-xl font-semibold text-text">
-                                    Sin servicios disponibles
+                                    Sin servicios
+                                    disponibles
                                 </h3>
 
                                 <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-text-muted">
-                                    Este freelancer todavía no tiene servicios activos disponibles para contratación.
+                                    Este
+                                    freelancer
+                                    todavía no
+                                    tiene
+                                    servicios
+                                    activos
+                                    disponibles
+                                    para
+                                    contratación.
                                 </p>
                             </div>
                         )}
@@ -787,23 +1010,33 @@ export default function FreelancerDetailPage() {
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                             <div>
                                 <p className="text-sm font-medium text-primary">
-                                    Trabajo realizado
+                                    Trabajo
+                                    realizado
                                 </p>
 
                                 <h2 className="mt-1 text-2xl font-bold text-text">
-                                    Portafolio profesional
+                                    Portafolio
+                                    profesional
                                 </h2>
 
                                 <p className="mt-2 max-w-2xl text-sm leading-6 text-text-muted">
-                                    Explora los proyectos y trabajos publicados por este freelancer.
+                                    Explora los
+                                    proyectos y
+                                    trabajos
+                                    publicados por
+                                    este
+                                    freelancer.
                                 </p>
                             </div>
 
                             <span className="inline-flex w-fit items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-sm font-medium text-text-muted">
                                 <FolderOpenIcon className="h-4 w-4" />
 
-                                {briefcasesCount}{" "}
-                                {briefcasesCount === 1
+                                {
+                                    briefcasesCount
+                                }{" "}
+                                {briefcasesCount ===
+                                1
                                     ? "proyecto"
                                     : "proyectos"}
                             </span>
@@ -812,10 +1045,16 @@ export default function FreelancerDetailPage() {
                         {hasBriefcases ? (
                             <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                                 {briefcases.map(
-                                    (briefcase) => (
+                                    (
+                                        briefcase,
+                                    ) => (
                                         <PublicBriefcaseCard
-                                            key={briefcase.id}
-                                            briefcase={briefcase}
+                                            key={
+                                                briefcase.id
+                                            }
+                                            briefcase={
+                                                briefcase
+                                            }
                                             onView={
                                                 openBriefcaseDetail
                                             }
@@ -830,11 +1069,18 @@ export default function FreelancerDetailPage() {
                                 </div>
 
                                 <h3 className="mt-5 text-xl font-semibold text-text">
-                                    Sin proyectos publicados
+                                    Sin proyectos
+                                    publicados
                                 </h3>
 
                                 <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-text-muted">
-                                    Este freelancer todavía no ha agregado proyectos a su portafolio público.
+                                    Este
+                                    freelancer
+                                    todavía no ha
+                                    agregado
+                                    proyectos a
+                                    su portafolio
+                                    público.
                                 </p>
                             </div>
                         )}
@@ -845,15 +1091,23 @@ export default function FreelancerDetailPage() {
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                             <div>
                                 <p className="text-sm font-medium text-primary">
-                                    Experiencias verificadas
+                                    Experiencias
+                                    verificadas
                                 </p>
 
                                 <h2 className="mt-1 text-2xl font-bold text-text">
-                                    Calificaciones y reseñas
+                                    Calificaciones
+                                    y reseñas
                                 </h2>
 
                                 <p className="mt-2 max-w-2xl text-sm leading-6 text-text-muted">
-                                    Opiniones publicadas por clientes y empresas después de completar un contrato.
+                                    Opiniones
+                                    publicadas por
+                                    clientes y
+                                    empresas
+                                    después de
+                                    completar un
+                                    contrato.
                                 </p>
                             </div>
 
@@ -863,14 +1117,16 @@ export default function FreelancerDetailPage() {
                                 <div>
                                     <p className="text-xl font-bold text-text">
                                         {(averageRating ??
-                                            freelancer.rating).toFixed(
-                                                1,
-                                            )}
+                                            freelancer.rating
+                                        ).toFixed(
+                                            1,
+                                        )}
                                         /5
                                     </p>
 
                                     <p className="text-xs text-text-muted">
-                                        {reviewsCount === 1
+                                        {reviewsCount ===
+                                        1
                                             ? "1 reseña"
                                             : `${reviewsCount} reseñas`}
                                     </p>
@@ -882,69 +1138,93 @@ export default function FreelancerDetailPage() {
                             <div className="mt-6 grid gap-5 md:grid-cols-2">
                                 {Array.from({
                                     length: 4,
-                                }).map((_, index) => (
-                                    <article
-                                        key={index}
-                                        className="animate-pulse rounded-2xl border border-border bg-surface p-5 shadow-card"
-                                    >
-                                        <div className="flex gap-3">
-                                            <div className="h-12 w-12 rounded-full bg-border" />
+                                }).map(
+                                    (
+                                        _,
+                                        index,
+                                    ) => (
+                                        <article
+                                            key={
+                                                index
+                                            }
+                                            className="animate-pulse rounded-2xl border border-border bg-surface p-5 shadow-card"
+                                        >
+                                            <div className="flex gap-3">
+                                                <div className="h-12 w-12 rounded-full bg-border" />
 
-                                            <div className="flex-1">
-                                                <div className="h-4 w-40 rounded bg-border" />
-                                                <div className="mt-2 h-3 w-24 rounded bg-border" />
+                                                <div className="flex-1">
+                                                    <div className="h-4 w-40 rounded bg-border" />
+
+                                                    <div className="mt-2 h-3 w-24 rounded bg-border" />
+                                                </div>
                                             </div>
-                                        </div>
 
-                                        <div className="mt-5 h-4 w-full rounded bg-border" />
-                                        <div className="mt-2 h-4 w-3/4 rounded bg-border" />
-                                    </article>
-                                ))}
+                                            <div className="mt-5 h-4 w-full rounded bg-border" />
+
+                                            <div className="mt-2 h-4 w-3/4 rounded bg-border" />
+                                        </article>
+                                    ),
+                                )}
                             </div>
                         ) : reviewsError ? (
                             <div className="mt-6 rounded-2xl border border-danger/30 bg-danger/5 p-6 text-center">
                                 <ExclamationTriangleIcon className="mx-auto h-8 w-8 text-danger" />
 
                                 <p className="mt-3 text-sm text-text-muted">
-                                    {reviewsError}
+                                    {
+                                        reviewsError
+                                    }
                                 </p>
                             </div>
-                        ) : publicReviews.length > 0 ? (
+                        ) : publicReviews.length >
+                          0 ? (
                             <>
                                 <div className="mt-6 grid gap-5 md:grid-cols-2">
                                     {publicReviews.map(
-                                        (review) => {
+                                        (
+                                            review,
+                                        ) => {
                                             const evaluator =
                                                 review.evaluator;
 
                                             const evaluatorName =
                                                 evaluator
                                                     ? [
-                                                        evaluator.name,
-                                                        evaluator.last_name,
-                                                    ]
-                                                        .filter(Boolean)
-                                                        .join(" ")
+                                                          evaluator.name,
+                                                          evaluator.last_name,
+                                                      ]
+                                                          .filter(
+                                                              Boolean,
+                                                          )
+                                                          .join(
+                                                              " ",
+                                                          )
                                                     : "Usuario de WorkLink";
 
                                             const initials =
                                                 evaluator
                                                     ? [
-                                                        evaluator.name?.charAt(
-                                                            0,
-                                                        ),
-                                                        evaluator.last_name?.charAt(
-                                                            0,
-                                                        ),
-                                                    ]
-                                                        .filter(Boolean)
-                                                        .join("")
-                                                        .toUpperCase()
+                                                          evaluator.name?.charAt(
+                                                              0,
+                                                          ),
+                                                          evaluator.last_name?.charAt(
+                                                              0,
+                                                          ),
+                                                      ]
+                                                          .filter(
+                                                              Boolean,
+                                                          )
+                                                          .join(
+                                                              "",
+                                                          )
+                                                          .toUpperCase()
                                                     : "";
 
                                             return (
                                                 <article
-                                                    key={review.id}
+                                                    key={
+                                                        review.id
+                                                    }
                                                     className="rounded-2xl border border-border bg-surface p-5 shadow-card"
                                                 >
                                                     <div className="flex items-start gap-3">
@@ -966,7 +1246,9 @@ export default function FreelancerDetailPage() {
 
                                                         <div className="min-w-0 flex-1">
                                                             <p className="truncate font-semibold text-text">
-                                                                {evaluatorName}
+                                                                {
+                                                                    evaluatorName
+                                                                }
                                                             </p>
 
                                                             <p className="mt-0.5 text-xs capitalize text-text-muted">
@@ -993,7 +1275,9 @@ export default function FreelancerDetailPage() {
 
                                                     <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-4 text-xs text-text-muted">
                                                         <span>
-                                                            {review.service?.title ??
+                                                            {review
+                                                                .service
+                                                                ?.title ??
                                                                 "Contrato completado"}
                                                         </span>
 
@@ -1011,21 +1295,25 @@ export default function FreelancerDetailPage() {
 
                                 {reviewsPagination &&
                                     reviewsPagination.last_page >
-                                    1 && (
+                                        1 && (
                                         <div className="mt-6 flex items-center justify-center gap-3">
                                             <button
                                                 type="button"
                                                 onClick={() =>
                                                     setReviewsPage(
-                                                        (currentPage) =>
+                                                        (
+                                                            currentPage,
+                                                        ) =>
                                                             Math.max(
-                                                                currentPage - 1,
+                                                                currentPage -
+                                                                    1,
                                                                 1,
                                                             ),
                                                     )
                                                 }
                                                 disabled={
-                                                    reviewsPage <= 1 ||
+                                                    reviewsPage <=
+                                                        1 ||
                                                     isReviewsLoading
                                                 }
                                                 className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-text transition hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
@@ -1036,11 +1324,15 @@ export default function FreelancerDetailPage() {
                                             <span className="text-sm text-text-muted">
                                                 Página{" "}
                                                 <strong className="text-text">
-                                                    {reviewsPagination.current_page}
+                                                    {
+                                                        reviewsPagination.current_page
+                                                    }
                                                 </strong>{" "}
                                                 de{" "}
                                                 <strong className="text-text">
-                                                    {reviewsPagination.last_page}
+                                                    {
+                                                        reviewsPagination.last_page
+                                                    }
                                                 </strong>
                                             </span>
 
@@ -1048,16 +1340,19 @@ export default function FreelancerDetailPage() {
                                                 type="button"
                                                 onClick={() =>
                                                     setReviewsPage(
-                                                        (currentPage) =>
+                                                        (
+                                                            currentPage,
+                                                        ) =>
                                                             Math.min(
-                                                                currentPage + 1,
+                                                                currentPage +
+                                                                    1,
                                                                 reviewsPagination.last_page,
                                                             ),
                                                     )
                                                 }
                                                 disabled={
                                                     reviewsPage >=
-                                                    reviewsPagination.last_page ||
+                                                        reviewsPagination.last_page ||
                                                     isReviewsLoading
                                                 }
                                                 className="rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-text transition hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
@@ -1074,11 +1369,19 @@ export default function FreelancerDetailPage() {
                                 </div>
 
                                 <h3 className="mt-5 text-xl font-semibold text-text">
-                                    Aún no tiene reseñas
+                                    Aún no tiene
+                                    reseñas
                                 </h3>
 
                                 <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-text-muted">
-                                    Las opiniones aparecerán cuando el freelancer complete contratos y reciba calificaciones.
+                                    Las opiniones
+                                    aparecerán
+                                    cuando el
+                                    freelancer
+                                    complete
+                                    contratos y
+                                    reciba
+                                    calificaciones.
                                 </p>
                             </div>
                         )}
@@ -1092,14 +1395,17 @@ export default function FreelancerDetailPage() {
                         >
                             <ArrowLeftIcon className="h-5 w-5" />
 
-                            Ver más freelancers
+                            Ver más
+                            freelancers
                         </Link>
                     </div>
                 </div>
             </main>
 
             <PublicBriefcaseDetail
-                briefcase={selectedBriefcase}
+                briefcase={
+                    selectedBriefcase
+                }
                 isLoading={
                     isBriefcaseDetailLoading
                 }

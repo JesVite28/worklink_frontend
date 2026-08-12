@@ -2,6 +2,7 @@ import {
   BanknotesIcon,
   BriefcaseIcon,
   CalendarDaysIcon,
+  ChatBubbleLeftRightIcon,
   CheckCircleIcon,
   ClockIcon,
   EnvelopeIcon,
@@ -14,6 +15,10 @@ import {
   XCircleIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
+
+import {
+  useNavigate,
+} from "react-router-dom";
 
 import type {
   Application,
@@ -80,7 +85,11 @@ function formatDate(
 ): string {
   const date = new Date(value);
 
-  if (Number.isNaN(date.getTime())) {
+  if (
+    Number.isNaN(
+      date.getTime(),
+    )
+  ) {
     return "Fecha no disponible";
   }
 
@@ -97,7 +106,11 @@ function formatDate(
 }
 
 function formatCurrency(
-  value: string | number | null | undefined,
+  value:
+    | string
+    | number
+    | null
+    | undefined,
 ): string {
   if (
     value === null ||
@@ -107,11 +120,16 @@ function formatCurrency(
     return "No especificada";
   }
 
-  const numericValue = Number(value);
+  const numericValue =
+    Number(value);
 
   if (
-    Number.isNaN(numericValue) ||
-    !Number.isFinite(numericValue)
+    Number.isNaN(
+      numericValue,
+    ) ||
+    !Number.isFinite(
+      numericValue,
+    )
   ) {
     return "No especificada";
   }
@@ -127,13 +145,19 @@ function formatCurrency(
 }
 
 function formatWorkMode(
-  workMode: string | null | undefined,
+  workMode:
+    | string
+    | null
+    | undefined,
 ): string {
   if (!workMode) {
     return "No especificada";
   }
 
-  const labels: Record<string, string> = {
+  const labels: Record<
+    string,
+    string
+  > = {
     remote: "Remoto",
     remoto: "Remoto",
     on_site: "Presencial",
@@ -144,37 +168,54 @@ function formatWorkMode(
     híbrido: "Híbrido",
   };
 
-  return labels[workMode.toLowerCase()] ?? workMode;
+  return (
+    labels[
+      workMode.toLowerCase()
+    ] ?? workMode
+  );
 }
 
 function formatRateType(
-  rateType: string | null | undefined,
+  rateType:
+    | string
+    | null
+    | undefined,
 ): string {
   if (!rateType) {
     return "Tarifa";
   }
 
-  const labels: Record<string, string> = {
+  const labels: Record<
+    string,
+    string
+  > = {
     hourly: "Por hora",
     hour: "Por hora",
     por_hora: "Por hora",
     project: "Por proyecto",
     fixed: "Por proyecto",
-    por_proyecto: "Por proyecto",
+    por_proyecto:
+      "Por proyecto",
     daily: "Por día",
     por_dia: "Por día",
     monthly: "Por mes",
     mensual: "Por mes",
   };
 
-  return labels[rateType.toLowerCase()] ?? rateType;
+  return (
+    labels[
+      rateType.toLowerCase()
+    ] ?? rateType
+  );
 }
 
 function getFullName(
   application: Application,
 ): string {
   const user =
-    application.freelancer_profile?.user;
+    application
+      .freelancer_profile
+      ?.user;
 
   if (!user) {
     return "Freelancer no disponible";
@@ -192,18 +233,24 @@ function getFullName(
 function getInitials(
   fullName: string,
 ): string {
-  const words = fullName
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
+  const words =
+    fullName
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean);
 
-  if (words.length === 0) {
+  if (
+    words.length === 0
+  ) {
     return "FL";
   }
 
   return words
     .slice(0, 2)
-    .map((word) => word.charAt(0))
+    .map(
+      (word) =>
+        word.charAt(0),
+    )
     .join("")
     .toUpperCase();
 }
@@ -211,11 +258,16 @@ function getInitials(
 function normalizeUrl(
   url: string,
 ): string {
-  const normalizedUrl = url.trim();
+  const normalizedUrl =
+    url.trim();
 
   if (
-    normalizedUrl.startsWith("http://") ||
-    normalizedUrl.startsWith("https://")
+    normalizedUrl.startsWith(
+      "http://",
+    ) ||
+    normalizedUrl.startsWith(
+      "https://",
+    )
   ) {
     return normalizedUrl;
   }
@@ -226,17 +278,25 @@ function normalizeUrl(
 function getStatusIcon(
   status: ApplicationStatus,
 ) {
-  if (status === "pending") {
-    return <ClockIcon className="h-6 w-6" />;
+  if (
+    status === "pending"
+  ) {
+    return (
+      <ClockIcon className="h-6 w-6" />
+    );
   }
 
-  if (status === "accepted") {
+  if (
+    status === "accepted"
+  ) {
     return (
       <CheckCircleIcon className="h-6 w-6" />
     );
   }
 
-  return <XCircleIcon className="h-6 w-6" />;
+  return (
+    <XCircleIcon className="h-6 w-6" />
+  );
 }
 
 export default function ReceivedApplicationDetail({
@@ -246,6 +306,9 @@ export default function ReceivedApplicationDetail({
   onReject,
   onClose,
 }: Props) {
+  const navigate =
+    useNavigate();
+
   if (!application) {
     return null;
   }
@@ -253,25 +316,56 @@ export default function ReceivedApplicationDetail({
   const freelancerProfile =
     application.freelancer_profile;
 
-  const user = freelancerProfile?.user;
+  const user =
+    freelancerProfile?.user;
 
-  const vacancy = application.vacancy;
+  const vacancy =
+    application.vacancy;
 
   const fullName =
-    getFullName(application);
+    getFullName(
+      application,
+    );
 
   const status =
-    statusInformation[application.status];
+    statusInformation[
+      application.status
+    ];
 
   const canRespond =
-    application.status === "pending";
+    application.status ===
+    "pending";
+
+  /*
+  |--------------------------------------------------------------------------
+  | Mensajería
+  |--------------------------------------------------------------------------
+  */
+
+  const freelancerUserId =
+    user?.id ?? null;
+
+  function handleSendMessage(): void {
+    if (
+      !freelancerUserId
+    ) {
+      return;
+    }
+
+    onClose();
+
+    navigate(
+      `/dashboard/mensajes?user=${freelancerUserId}`,
+    );
+  }
 
   const professionalLinks = [
     {
       label: "Sitio web",
       url:
         freelancerProfile
-          ?.professional_links?.website,
+          ?.professional_links
+          ?.website,
     },
     {
       label: "Portafolio",
@@ -284,25 +378,29 @@ export default function ReceivedApplicationDetail({
       label: "LinkedIn",
       url:
         freelancerProfile
-          ?.professional_links?.linkedin,
+          ?.professional_links
+          ?.linkedin,
     },
     {
       label: "GitHub",
       url:
         freelancerProfile
-          ?.professional_links?.github,
+          ?.professional_links
+          ?.github,
     },
     {
       label: "Facebook",
       url:
         freelancerProfile
-          ?.professional_links?.facebook,
+          ?.professional_links
+          ?.facebook,
     },
     {
       label: "Instagram",
       url:
         freelancerProfile
-          ?.professional_links?.instagram,
+          ?.professional_links
+          ?.instagram,
     },
   ].filter(
     (
@@ -310,11 +408,15 @@ export default function ReceivedApplicationDetail({
     ): item is {
       label: string;
       url: string;
-    } => Boolean(item.url),
+    } =>
+      Boolean(
+        item.url,
+      ),
   );
 
   const languages =
-    freelancerProfile?.languages ?? [];
+    freelancerProfile
+      ?.languages ?? [];
 
   return (
     <div
@@ -326,8 +428,12 @@ export default function ReceivedApplicationDetail({
       {/* Fondo */}
       <button
         type="button"
-        onClick={onClose}
-        disabled={isProcessing}
+        onClick={
+          onClose
+        }
+        disabled={
+          isProcessing
+        }
         aria-label="Cerrar detalle"
         className="absolute inset-0 cursor-default"
       />
@@ -352,20 +458,27 @@ export default function ReceivedApplicationDetail({
                 id="received-application-detail-title"
                 className="text-xl font-semibold text-text"
               >
-                Información de la postulación
+                Información de
+                la postulación
               </h2>
 
               <p className="mt-1 text-sm leading-6 text-text-muted">
-                Revisa el perfil profesional y el
-                mensaje enviado por el candidato.
+                Revisa el perfil
+                profesional y el
+                mensaje enviado
+                por el candidato.
               </p>
             </div>
           </div>
 
           <button
             type="button"
-            onClick={onClose}
-            disabled={isProcessing}
+            onClick={
+              onClose
+            }
+            disabled={
+              isProcessing
+            }
             aria-label="Cerrar"
             className="rounded-xl p-2 text-text-muted transition hover:bg-background hover:text-text disabled:cursor-not-allowed disabled:opacity-50"
           >
@@ -384,13 +497,19 @@ export default function ReceivedApplicationDetail({
                   <div className="flex min-w-0 items-start gap-4">
                     {user?.profile_photo_url ? (
                       <img
-                        src={user.profile_photo_url}
-                        alt={fullName}
+                        src={
+                          user.profile_photo_url
+                        }
+                        alt={
+                          fullName
+                        }
                         className="h-16 w-16 shrink-0 rounded-full border border-border object-cover"
                       />
                     ) : (
                       <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary/10 text-lg font-bold text-primary">
-                        {getInitials(fullName)}
+                        {getInitials(
+                          fullName,
+                        )}
                       </div>
                     )}
 
@@ -400,16 +519,20 @@ export default function ReceivedApplicationDetail({
                       </p>
 
                       <h3 className="mt-1 text-xl font-semibold text-text">
-                        {fullName}
+                        {
+                          fullName
+                        }
                       </h3>
 
                       <p className="mt-1 text-sm font-medium text-primary">
-                        {freelancerProfile?.specialty ||
+                        {freelancerProfile
+                          ?.specialty ||
                           "Especialidad no especificada"}
                       </p>
 
                       <p className="mt-2 text-sm text-text-muted">
-                        {freelancerProfile?.available
+                        {freelancerProfile
+                          ?.available
                           ? "Disponible para trabajar"
                           : "No disponible actualmente"}
                       </p>
@@ -420,14 +543,19 @@ export default function ReceivedApplicationDetail({
                     className={[
                       "inline-flex shrink-0 items-center rounded-full border px-3 py-1.5 text-xs font-semibold",
                       status.badgeClassName,
-                    ].join(" ")}
+                    ].join(
+                      " ",
+                    )}
                   >
-                    {status.label}
+                    {
+                      status.label
+                    }
                   </span>
                 </div>
 
                 <p className="mt-5 border-t border-border pt-5 text-sm leading-7 text-text-muted">
-                  {freelancerProfile?.description ||
+                  {freelancerProfile
+                    ?.description ||
                     "El candidato no agregó una descripción profesional."}
                 </p>
               </section>
@@ -435,7 +563,8 @@ export default function ReceivedApplicationDetail({
               {/* Información profesional */}
               <section className="rounded-2xl border border-border bg-surface p-5 shadow-card sm:p-6">
                 <h3 className="text-lg font-semibold text-text">
-                  Información profesional
+                  Información
+                  profesional
                 </h3>
 
                 <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -448,7 +577,8 @@ export default function ReceivedApplicationDetail({
                       </p>
 
                       <p className="mt-1 text-sm font-medium text-text">
-                        {freelancerProfile?.location ||
+                        {freelancerProfile
+                          ?.location ||
                           "No especificada"}
                       </p>
                     </div>
@@ -459,11 +589,13 @@ export default function ReceivedApplicationDetail({
 
                     <div>
                       <p className="text-xs font-medium text-text-muted">
-                        Área de servicio
+                        Área de
+                        servicio
                       </p>
 
                       <p className="mt-1 text-sm font-medium text-text">
-                        {freelancerProfile?.service_area ||
+                        {freelancerProfile
+                          ?.service_area ||
                           "No especificada"}
                       </p>
                     </div>
@@ -474,12 +606,14 @@ export default function ReceivedApplicationDetail({
 
                     <div>
                       <p className="text-xs font-medium text-text-muted">
-                        Modalidad de trabajo
+                        Modalidad de
+                        trabajo
                       </p>
 
                       <p className="mt-1 text-sm font-medium text-text">
                         {formatWorkMode(
-                          freelancerProfile?.work_mode,
+                          freelancerProfile
+                            ?.work_mode,
                         )}
                       </p>
                     </div>
@@ -494,7 +628,8 @@ export default function ReceivedApplicationDetail({
                       </p>
 
                       <p className="mt-1 text-sm font-medium text-text">
-                        {freelancerProfile?.experience ||
+                        {freelancerProfile
+                          ?.experience ||
                           "No especificada"}
                       </p>
                     </div>
@@ -505,16 +640,19 @@ export default function ReceivedApplicationDetail({
 
                     <div>
                       <p className="text-xs font-medium text-text-muted">
-                        Tarifa profesional
+                        Tarifa
+                        profesional
                       </p>
 
                       <p className="mt-1 text-sm font-medium text-text">
                         {formatCurrency(
-                          freelancerProfile?.rate,
+                          freelancerProfile
+                            ?.rate,
                         )}{" "}
                         ·{" "}
                         {formatRateType(
-                          freelancerProfile?.rate_type,
+                          freelancerProfile
+                            ?.rate_type,
                         )}
                       </p>
                     </div>
@@ -525,17 +663,21 @@ export default function ReceivedApplicationDetail({
               {/* Mensaje */}
               <section className="rounded-2xl border border-border bg-surface p-5 shadow-card sm:p-6">
                 <h3 className="text-lg font-semibold text-text">
-                  Mensaje del candidato
+                  Mensaje del
+                  candidato
                 </h3>
 
                 {application.message ? (
                   <p className="mt-4 whitespace-pre-wrap rounded-xl border border-border bg-background p-4 text-sm leading-7 text-text-muted">
-                    {application.message}
+                    {
+                      application.message
+                    }
                   </p>
                 ) : (
                   <p className="mt-4 rounded-xl border border-dashed border-border bg-background p-4 text-sm italic leading-6 text-text-muted">
-                    El candidato no agregó un mensaje
-                    a su postulación.
+                    El candidato no
+                    agregó un mensaje a
+                    su postulación.
                   </p>
                 )}
               </section>
@@ -550,23 +692,29 @@ export default function ReceivedApplicationDetail({
                   </h3>
                 </div>
 
-                {languages.length > 0 ? (
+                {languages.length >
+                0 ? (
                   <div className="mt-4 flex flex-wrap gap-2">
                     {languages.map(
-                      (language, index) => (
+                      (
+                        language,
+                        index,
+                      ) => (
                         <span
                           key={`${language}-${index}`}
                           className="rounded-full border border-primary/20 bg-primary/5 px-3 py-1.5 text-sm font-medium text-primary"
                         >
-                          {language}
+                          {
+                            language
+                          }
                         </span>
                       ),
                     )}
                   </div>
                 ) : (
                   <p className="mt-3 text-sm text-text-muted">
-                    El candidato no especificó
-                    idiomas.
+                    El candidato no
+                    especificó idiomas.
                   </p>
                 )}
               </section>
@@ -577,14 +725,18 @@ export default function ReceivedApplicationDetail({
                   <LinkIcon className="h-5 w-5 text-primary" />
 
                   <h3 className="text-lg font-semibold text-text">
-                    Enlaces profesionales
+                    Enlaces
+                    profesionales
                   </h3>
                 </div>
 
-                {professionalLinks.length > 0 ? (
+                {professionalLinks.length >
+                0 ? (
                   <div className="mt-4 grid gap-3 sm:grid-cols-2">
                     {professionalLinks.map(
-                      (item) => (
+                      (
+                        item,
+                      ) => (
                         <a
                           key={`${item.label}-${item.url}`}
                           href={normalizeUrl(
@@ -595,7 +747,9 @@ export default function ReceivedApplicationDetail({
                           className="inline-flex items-center justify-between gap-3 rounded-xl border border-border bg-background px-4 py-3 text-sm font-medium text-text transition hover:border-primary/40 hover:text-primary"
                         >
                           <span className="truncate">
-                            {item.label}
+                            {
+                              item.label
+                            }
                           </span>
 
                           <GlobeAltIcon className="h-5 w-5 shrink-0" />
@@ -605,7 +759,8 @@ export default function ReceivedApplicationDetail({
                   </div>
                 ) : (
                   <p className="mt-3 text-sm text-text-muted">
-                    El candidato no agregó enlaces
+                    El candidato no
+                    agregó enlaces
                     profesionales.
                   </p>
                 )}
@@ -621,7 +776,8 @@ export default function ReceivedApplicationDetail({
 
                   <div>
                     <p className="text-xs font-medium uppercase tracking-wide text-primary">
-                      Vacante solicitada
+                      Vacante
+                      solicitada
                     </p>
 
                     <h3 className="mt-2 font-semibold text-text">
@@ -631,7 +787,9 @@ export default function ReceivedApplicationDetail({
 
                     {vacancy?.category && (
                       <p className="mt-1 text-sm text-text-muted">
-                        {vacancy.category}
+                        {
+                          vacancy.category
+                        }
                       </p>
                     )}
                   </div>
@@ -673,7 +831,8 @@ export default function ReceivedApplicationDetail({
 
                     <div className="min-w-0">
                       <p className="text-xs text-text-muted">
-                        Correo electrónico
+                        Correo
+                        electrónico
                       </p>
 
                       {user?.email ? (
@@ -681,7 +840,9 @@ export default function ReceivedApplicationDetail({
                           href={`mailto:${user.email}`}
                           className="mt-1 block truncate text-sm font-medium text-primary hover:underline"
                         >
-                          {user.email}
+                          {
+                            user.email
+                          }
                         </a>
                       ) : (
                         <p className="mt-1 text-sm text-text">
@@ -706,7 +867,9 @@ export default function ReceivedApplicationDetail({
                           href={`tel:${user.phone}`}
                           className="mt-1 block text-sm font-medium text-primary hover:underline"
                         >
-                          {user.phone}
+                          {
+                            user.phone
+                          }
                         </a>
                       ) : (
                         <p className="mt-1 text-sm text-text">
@@ -715,6 +878,29 @@ export default function ReceivedApplicationDetail({
                       )}
                     </div>
                   </div>
+
+                  {/* Mensaje directo */}
+                  {freelancerUserId !==
+                    null && (
+                    <>
+                      <div className="border-t border-border" />
+
+                      <button
+                        type="button"
+                        onClick={
+                          handleSendMessage
+                        }
+                        disabled={
+                          isProcessing
+                        }
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-primary bg-primary/10 px-4 py-3 text-sm font-semibold text-primary transition hover:bg-primary hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <ChatBubbleLeftRightIcon className="h-5 w-5" />
+
+                        Enviar mensaje
+                      </button>
+                    </>
+                  )}
                 </div>
               </section>
 
@@ -725,12 +911,14 @@ export default function ReceivedApplicationDetail({
 
                   <div>
                     <p className="text-xs font-medium text-text-muted">
-                      Postulación recibida
+                      Postulación
+                      recibida
                     </p>
 
                     <p className="mt-1 text-sm font-medium text-text">
                       {formatDate(
-                        application.created_at,
+                        application
+                          .created_at,
                       )}
                     </p>
                   </div>
@@ -741,6 +929,7 @@ export default function ReceivedApplicationDetail({
               <section
                 className={[
                   "rounded-2xl border p-5",
+
                   application.status ===
                   "pending"
                     ? "border-warning/30 bg-warning/5"
@@ -757,11 +946,15 @@ export default function ReceivedApplicationDetail({
 
                   <div>
                     <h3 className="font-semibold text-text">
-                      {status.label}
+                      {
+                        status.label
+                      }
                     </h3>
 
                     <p className="mt-1 text-sm leading-6 text-text-muted">
-                      {status.description}
+                      {
+                        status.description
+                      }
                     </p>
                   </div>
                 </div>
@@ -774,21 +967,48 @@ export default function ReceivedApplicationDetail({
         <footer className="flex flex-col-reverse gap-3 border-t border-border bg-surface px-5 py-4 sm:flex-row sm:justify-end sm:px-6">
           <button
             type="button"
-            onClick={onClose}
-            disabled={isProcessing}
+            onClick={
+              onClose
+            }
+            disabled={
+              isProcessing
+            }
             className="inline-flex items-center justify-center rounded-xl border border-border bg-background px-5 py-3 font-medium text-text transition hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-60"
           >
             Cerrar
           </button>
+
+          {/* Enviar mensaje */}
+          {freelancerUserId !==
+            null && (
+            <button
+              type="button"
+              onClick={
+                handleSendMessage
+              }
+              disabled={
+                isProcessing
+              }
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-primary px-5 py-3 font-medium text-primary transition hover:bg-primary hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <ChatBubbleLeftRightIcon className="h-5 w-5" />
+
+              Enviar mensaje
+            </button>
+          )}
 
           {canRespond && (
             <>
               <button
                 type="button"
                 onClick={() =>
-                  onReject(application)
+                  onReject(
+                    application,
+                  )
                 }
-                disabled={isProcessing}
+                disabled={
+                  isProcessing
+                }
                 className="inline-flex items-center justify-center gap-2 rounded-xl border border-danger/30 bg-danger/5 px-5 py-3 font-medium text-danger transition hover:bg-danger/10 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isProcessing ? (
@@ -803,9 +1023,13 @@ export default function ReceivedApplicationDetail({
               <button
                 type="button"
                 onClick={() =>
-                  onAccept(application)
+                  onAccept(
+                    application,
+                  )
                 }
-                disabled={isProcessing}
+                disabled={
+                  isProcessing
+                }
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-success px-5 py-3 font-medium text-white shadow-soft transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isProcessing ? (

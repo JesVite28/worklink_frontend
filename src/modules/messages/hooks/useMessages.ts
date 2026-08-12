@@ -291,7 +291,7 @@ export default function useMessages() {
 
   /*
   |--------------------------------------------------------------------------
-  | Abrir conversación
+  | Abrir conversación desde la lista
   |--------------------------------------------------------------------------
   */
 
@@ -313,6 +313,7 @@ export default function useMessages() {
         );
 
         setMessages([]);
+
         setPagination(
           EMPTY_PAGINATION,
         );
@@ -362,6 +363,118 @@ export default function useMessages() {
       [
         markSelectedConversationAsRead,
         messages.length,
+        selectedUser?.id,
+      ],
+    );
+
+  /*
+  |--------------------------------------------------------------------------
+  | Abrir conversación directamente mediante userId
+  |--------------------------------------------------------------------------
+  |
+  | Permite iniciar una conversación con un usuario aunque todavía
+  | no exista ningún mensaje previo entre ambos.
+  |
+  */
+
+  const openConversationByUserId =
+    useCallback(
+      async (
+        userId: number,
+      ): Promise<boolean> => {
+        if (
+          !Number.isInteger(userId) ||
+          userId <= 0
+        ) {
+          setConversationError(
+            "El usuario seleccionado no es válido.",
+          );
+
+          return false;
+        }
+
+        if (
+          currentUserId !== null &&
+          userId === currentUserId
+        ) {
+          setConversationError(
+            "No puedes iniciar una conversación contigo mismo.",
+          );
+
+          return false;
+        }
+
+        if (
+          selectedUser?.id === userId &&
+          !isLoadingConversation
+        ) {
+          return true;
+        }
+
+        setMessages([]);
+
+        setPagination(
+          EMPTY_PAGINATION,
+        );
+
+        setMessageContent("");
+        setConversationError(null);
+        setIsLoadingConversation(true);
+
+        try {
+          const conversationData =
+            await getConversation(
+              userId,
+              {
+                page: 1,
+                per_page: 30,
+              },
+            );
+
+          setSelectedUser(
+            conversationData.user,
+          );
+
+          setMessages(
+            sortMessages(
+              conversationData.messages,
+            ),
+          );
+
+          setPagination(
+            conversationData.pagination,
+          );
+
+          await markSelectedConversationAsRead(
+            userId,
+          );
+
+          return true;
+        } catch (requestError) {
+          setSelectedUser(null);
+
+          setMessages([]);
+
+          setPagination(
+            EMPTY_PAGINATION,
+          );
+
+          setConversationError(
+            getErrorMessage(
+              requestError,
+              "No se pudo abrir la conversación con este usuario.",
+            ),
+          );
+
+          return false;
+        } finally {
+          setIsLoadingConversation(false);
+        }
+      },
+      [
+        currentUserId,
+        isLoadingConversation,
+        markSelectedConversationAsRead,
         selectedUser?.id,
       ],
     );
@@ -562,6 +675,11 @@ export default function useMessages() {
 
         setMessageContent("");
 
+        /*
+         * Después del primer mensaje,
+         * la conversación ya aparecerá
+         * automáticamente en la lista.
+         */
         await loadConversations(false);
 
         return true;
@@ -673,7 +791,9 @@ export default function useMessages() {
   const closeConversation =
     useCallback((): void => {
       setSelectedUser(null);
+
       setMessages([]);
+
       setPagination(
         EMPTY_PAGINATION,
       );
@@ -783,7 +903,15 @@ export default function useMessages() {
     conversationError,
 
     loadConversations,
+
     openConversation,
+
+    /*
+     * Nueva función para iniciar chats
+     * desde perfiles, vacantes, etc.
+     */
+    openConversationByUserId,
+
     closeConversation,
     loadOlderMessages,
 
