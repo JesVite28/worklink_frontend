@@ -1,6 +1,10 @@
-# Barracuda Front
+# WorkLink Frontend
 
-Aplicacion frontend administrativa para restaurante, construida con React + TypeScript + Vite, usando Tailwind CSS v4 como sistema principal de estilos.
+Aplicación web frontend de **WorkLink**, una plataforma diseñada para conectar freelancers, clientes y empresas dentro de un mismo entorno digital.
+
+El sistema permite explorar perfiles profesionales, publicar y consultar vacantes, gestionar servicios, postulaciones, solicitudes de contratación, contratos, mensajería, notificaciones, reseñas y diferentes funciones según el rol del usuario.
+
+El frontend está desarrollado con **React + TypeScript + Vite**, utilizando **Tailwind CSS v4** como sistema principal de estilos y consumiendo una API REST desarrollada de manera independiente.
 
 ## Stack
 
@@ -9,62 +13,95 @@ Aplicacion frontend administrativa para restaurante, construida con React + Type
 - Vite
 - React Router
 - Tailwind CSS v4
-- Lucide React
+- Axios
+- Heroicons
+- React Icons
 - SweetAlert2
+- React Markdown
+- Remark GFM
+
+## Roles del sistema
+
+WorkLink maneja diferentes tipos de usuario, cada uno con funciones específicas:
+
+- **Cliente**
+  - Explorar freelancers.
+  - Consultar servicios.
+  - Enviar solicitudes de contratación.
+  - Gestionar contratos.
+  - Comunicarse mediante mensajería.
+  - Consultar notificaciones.
+  - Publicar reseñas cuando corresponda.
+
+- **Freelancer**
+  - Administrar su perfil profesional.
+  - Publicar servicios.
+  - Administrar portafolio.
+  - Gestionar disponibilidad.
+  - Consultar vacantes.
+  - Enviar postulaciones.
+  - Gestionar solicitudes y contratos.
+  - Utilizar mensajería y notificaciones.
+  - Consultar reseñas recibidas.
+
+- **Empresa**
+  - Administrar su perfil empresarial.
+  - Publicar y administrar vacantes.
+  - Consultar postulaciones recibidas.
+  - Revisar perfiles de candidatos.
+  - Comunicarse con freelancers.
+  - Gestionar solicitudes y contratos.
+  - Consultar notificaciones y reseñas.
+
+- **Administrador**
+  - Gestionar usuarios.
+  - Gestionar freelancers y empresas.
+  - Supervisar vacantes y servicios.
+  - Consultar solicitudes.
+  - Supervisar chats.
+  - Administrar reseñas.
+  - Consultar reportes.
+  - Gestionar configuraciones administrativas.
+
+## Funcionalidades principales
+
+El frontend se encuentra dividido en módulos independientes para facilitar el mantenimiento y escalabilidad del proyecto.
+
+Entre las principales funcionalidades se encuentran:
+
+- Registro e inicio de sesión.
+- Autenticación con JWT.
+- Verificación en dos pasos.
+- Recuperación y cambio de contraseña.
+- Gestión de perfiles.
+- Exploración pública de freelancers.
+- Perfil público de freelancers.
+- Gestión de servicios.
+- Gestión de portafolio.
+- Gestión de disponibilidad.
+- Exploración pública de vacantes.
+- Publicación y administración de vacantes.
+- Postulaciones a vacantes.
+- Gestión de postulaciones recibidas.
+- Solicitudes de contratación.
+- Gestión de contratos.
+- Sistema de mensajería entre usuarios.
+- Sistema de notificaciones.
+- Sistema de reseñas y calificaciones.
+- Chatbot integrado.
+- Panel administrativo.
+- Tema claro y oscuro.
 
 ## Scripts
 
-- `npm run dev`: inicia entorno de desarrollo.
-- `npm run build`: genera build de produccion.
-- `npm run preview`: sirve build local.
-- `npm run lint`: valida reglas de ESLint.
+- `npm run dev`: inicia el entorno de desarrollo con Vite.
+- `npm run build`: ejecuta TypeScript y genera el build de producción.
+- `npm run preview`: sirve localmente el build generado.
+- `npm run lint`: valida el código utilizando ESLint.
 
-## Enfoque de Estilos (Tailwind-first)
+## Instalación
 
-Este proyecto sigue un enfoque **Tailwind-first**:
+Instala las dependencias del proyecto:
 
-- La UI se compone principalmente con clases de Tailwind en JSX.
-- `src/style/index.css` se usa para definir **tokens globales** (variables de tema), no para reemplazar Tailwind con clases de componentes.
-- Los componentes deben consumir tokens via utilidades Tailwind como:
-  - `bg-primary`
-  - `text-text`
-  - `text-text-muted`
-  - `border-border`
-  - `bg-surface`
-
-## Variables Globales CSS
-
-Las variables globales viven en `src/style/index.css` dentro de `@theme`.
-
-### Grupos de tokens
-
-- Colores de marca: `--color-primary`, `--color-secondary`
-- Colores de estado: `--color-success`, `--color-warning`, `--color-danger`, `--color-info`
-- Escala neutral: `--color-background`, `--color-surface`, `--color-border`, `--color-muted`
-- Tipografia: `--font-sans`, `--font-mono`
-- Radios, sombras, espaciado y escala de texto
-
-### Como extender tokens
-
-1. Agrega el token en `@theme` de `src/style/index.css`.
-2. Usa la utilidad Tailwind asociada directamente en JSX.
-3. Evita hardcodear colores (`bg-gray-*`, `text-blue-*`, etc.) cuando exista token global equivalente.
-
-## Estructura del Proyecto
-
-
-## Convenciones
-
-- Variables, funciones y tipos: en ingles.
-- Comentarios: en espanol.
-- Estilos de componentes: Tailwind en JSX.
-- Tokens globales: definidos en `index.css`.
-
-## Rutas Actuales
-
-
-## Recomendaciones de Escalado
-
-- Mantener consistencia visual agregando tokens antes de usar nuevos colores.
-- Reutilizar patrones de Tailwind por modulo antes de crear abstracciones innecesarias.
-- Documentar en este README cada nueva convencion global.
+```bash
+npm install
